@@ -16,7 +16,7 @@ export default function HomePage() {
     return (
         <div className="container mx-auto p-4 h-screen overflow-y-scroll hide-scrollbar">
             <h1 className="text-3xl font-bold mb-6">Nos Produits</h1>
-
+            <SearchBar />
 
             {status === 'loading' ? (
                 <div className="text-center">Chargement...</div>

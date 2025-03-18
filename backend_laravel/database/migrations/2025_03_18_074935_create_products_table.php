@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email', 191)->unique(); // Limitation à 191 caractères
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description');
+            $table->string('image');
+            $table->decimal('price', 8, 2);
+            $table->timestamps();
         });
     }
 
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('products');
     }
 };

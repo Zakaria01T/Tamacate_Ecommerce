@@ -18,7 +18,7 @@ export default function EditProductPage() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const { data } = await API.get(`/api/products/${productId}`)
+                const { data } = await API.get('https://fakestoreapi.com/products')
                 setProduct(data)
                 setError('')
             } catch (err) {

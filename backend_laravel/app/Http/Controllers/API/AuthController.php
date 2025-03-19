@@ -103,52 +103,9 @@ class AuthController extends Controller
         }
     }
 
-    public function updateUser(Request $request)
-    {
-        try {
-            $user = Auth::user();
+    
 
-            $validator = Validator::make($request->all(), [
-                'first_name' => 'string|max:255',
-                'last_name' => 'string|max:255',
-                'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-                'phone_number' => 'sometimes|max:20',
-                'image' => 'nullable|string',
-            ]);
-
-            if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
-            }
-
-            $user->update($request->all());
-
-            return response()->json(['message' => 'User data updated successfully', 'user' => $user], 200);
-        } catch (Exception $e) {
-            Log::error('Error updating user: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while updating user data'], 500);
-        }
-    }
-
-    public function deleteAccount(Request $request)
-    {
-        try {
-            $user = $request->user();
-
-            if (!Hash::check($request->input('password'), $user->password)) {
-                return response()->json(['error' => 'Incorrect password'], 401);
-            }
-
-            $user->tokens()->delete();
-            $user->delete();
-
-            Log::info('User deleted account.', ['user_id' => $user->id]);
-
-            return response()->json(['message' => 'Account deleted successfully'], 200);
-        } catch (Exception $e) {
-            Log::error('Error deleting account: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred while deleting the account'], 500);
-        }
-    }
+    
 
     public function checkEmail(Request $request)
     {

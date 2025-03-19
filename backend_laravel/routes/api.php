@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\PanierController;
 
 /*
@@ -20,6 +21,7 @@ use App\Http\Controllers\Api\PanierController;
 //login and register
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 //products
 Route::apiResource('products', ProductController::class);
@@ -33,6 +35,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/panier/clear', [PanierController::class, 'clearCart']);
 });
 
+//user
+Route::middleware('auth:sanctum')->put('/updateUser', [UserController::class, 'updateUser']);
+Route::middleware('auth:sanctum')->put('/updatePassword', [UserController::class, 'updatePassword']);
+Route::middleware('auth:sanctum')->delete('/delete-account', [UserController::class, 'deleteAccount']);
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
     const navigate = useNavigate()
 
     const addPanier = () => {
-        if (userInfo) {
+        if (true) {
             dispatch(addToCart(product))
         } else {
             navigate('/login')

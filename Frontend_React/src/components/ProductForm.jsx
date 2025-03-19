@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { API } from '../api/api'
 
 export default function ProductForm({
     onSubmit,
@@ -12,7 +13,6 @@ export default function ProductForm({
         price: 0,
         description: '',
         image: '',
-        stock: 10,
         ...initialValues
     })
 
@@ -37,11 +37,14 @@ export default function ProductForm({
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onSubmit(formData)
+        API.post('/products', formData)
+            .then(response => {
+                console.log(response.data)
+            })
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="container mx-auto space-y-6 overflow-y-scroll h-screen hide-scrollbar p-4">
             <div className="grid gap-4">
                 {/* Champ Nom */}
                 <div>
@@ -110,7 +113,7 @@ export default function ProductForm({
                 </div>
 
                 {/* Prévisualisation de l'image */}
-                {formData.image && (
+                {!formData.image && (
                     <div className="mt-4">
                         <p className="mb-2 font-medium">Prévisualisation :</p>
                         <img

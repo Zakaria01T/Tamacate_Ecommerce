@@ -3,12 +3,13 @@ import { createSlice } from '@reduxjs/toolkit'
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
-        items: [],
+        items: JSON.parse(localStorage.getItem('cart')) || [],
         total: 0
     },
     reducers: {
         addToCart: (state, action) => {
             const existingItem = state.items.find(item => item.id === action.payload.id)
+            localStorage.setItem('cart', JSON.stringify(state.items))
 
             if (existingItem) {
                 existingItem.quantity += 1

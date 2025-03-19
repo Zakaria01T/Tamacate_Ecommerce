@@ -10,6 +10,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import EditProductPage from './pages/EditProductPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
+import ProductForm from './components/ProductForm'
 
 
 function App() {
@@ -23,16 +24,17 @@ function App() {
         <Route path="/product/:id" element={<ProductPage />} />
 
         {/* Routes protégées */}
-        <Route element={<ProtectedRoute />}>
+        <Route >
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
         </Route>
 
         {/* Routes admin */}
-        <Route element={<ProtectedRoute adminOnly />}>
+        <Route >
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/new" element={<EditProductPage />} />
+          <Route path="/admin/product" element={<ProductForm />} />
           <Route path="/admin/edit/:id" element={<EditProductPage />} />
         </Route>
 

@@ -16,7 +16,7 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">Tableau de bord</h1>
                 <Link
-                    to="/admin/new"
+                    to="/admin/product"
                     className="bg-green-600 text-white px-4 py-2 rounded-lg"
                 >
                     + Nouveau Produit
@@ -36,8 +36,8 @@ export default function AdminDashboard() {
 
                     <tbody>
                         {items.map(product => (
-                            <tr key={product._id} className="border-b">
-                                <td className="p-4">{product.name}</td>
+                            <tr key={product.id} className="border-b">
+                                <td className="p-4">{product.title}</td>
                                 <td className="p-4">€{product.price}</td>
                                 <td className="p-4">{product.stock}</td>
                                 <td className="p-4 space-x-2">

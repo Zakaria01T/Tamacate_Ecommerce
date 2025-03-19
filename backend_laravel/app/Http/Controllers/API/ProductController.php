@@ -26,7 +26,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:70',
             'description' => 'required|string',
             'image' => 'required',
-            'price' => 'required|Float',
+            'price' => 'required|numeric',
         ]);
 
         if($validate->fails()){
@@ -65,7 +65,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:70',
             'description' => 'required|string',
             'image' => 'required',
-            'price' => 'required|Float',
+            'price' => 'required|numeric',
         ]);
 
         if($validate->fails()){

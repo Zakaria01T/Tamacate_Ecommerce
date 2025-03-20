@@ -13,13 +13,13 @@ class Panier extends Model
 
     protected $fillable = [
         'user_id',
-        'total_price',
+        'product_id',
+        'quantity',
     ];
 
     // A panier (cart) can have many products (through a pivot table)
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'panier_product')
-                    ->withPivot('quantity', 'price');
+        return $this->belongsTo(Product::class, 'product_id');
     }
 }

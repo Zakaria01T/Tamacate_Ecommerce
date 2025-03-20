@@ -32,15 +32,19 @@ export default function ProductForm({
         setFormData(prev => ({
             ...prev,
             [name]: name === 'price' || name === 'stock' ? Number(value) : value
+            
         }))
     }
+
+    
 
     const handleSubmit = (e) => {
         e.preventDefault()
         API.post('/products', formData)
             .then(response => {
                 console.log(response.data)
-            })
+              })
+              console.log(formData);
     }
 
     return (
@@ -89,7 +93,7 @@ export default function ProductForm({
                 <div>
                     <label className="block mb-2 font-medium">URL de l'image</label>
                     <input
-                        type="url"
+                        type="file"
                         name="image"
                         value={formData.image}
                         onChange={handleChange}

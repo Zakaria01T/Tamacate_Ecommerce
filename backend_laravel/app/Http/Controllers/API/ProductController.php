@@ -25,7 +25,7 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|image',
+            'image' => 'required',
             'price' => 'required|numeric',
         ]);
 
@@ -34,12 +34,12 @@ class ProductController extends Controller
                 'errors' => $validate->errors()
             ], 400);
         }
-        $imageData = file_get_contents($request->file('image')->getRealPath());
+        //$imageData = file_get_contents($request->file('image')->getRealPath());
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
+            'image' => $request->image,
             'price' => $request->price,
         ]);
         return response()->json([
@@ -76,16 +76,16 @@ class ProductController extends Controller
             ], 400);
         }
 
-        if ($request->hasFile('image')) {
-            $imageData = file_get_contents($request->file('image')->getRealPath());
-        } else {
-            $imageData = $product->image;
-        }
+        // if ($request->hasFile('image')) {
+        //     $imageData = file_get_contents($request->file('image')->getRealPath());
+        // } else {
+        //     $imageData = $product->image;
+        // }
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
+            'image' => $product->image,
             'price' => $request->price,
         ]);
         return response()->json([

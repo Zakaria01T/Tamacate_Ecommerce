@@ -30,17 +30,19 @@ Route::middleware('auth:sanctum')->group(function () {
 
 //paniers
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/panier', [PanierController::class, 'index']);
-    Route::post('/panier/add/{productId}', [PanierController::class, 'addToCart']);
-    Route::post('/panier/update/{productId}', [PanierController::class, 'updateCart']);
-    Route::get('/panier/remove/{productId}', [PanierController::class, 'removeFromCart']);
-    Route::get('/panier/clear', [PanierController::class, 'clearCart']);
+    Route::get('/paniers', [PanierController::class, 'index']);
+    Route::post('/paniers', [PanierController::class, 'store']);
+    Route::put('/paniers/{id}', [PanierController::class, 'update']);
+    Route::delete('/paniers/{id}', [PanierController::class, 'destroy']);
 });
 
+
 //user
-Route::middleware('auth:sanctum')->put('/updateUser', [UserController::class, 'updateUser']);
-Route::middleware('auth:sanctum')->put('/updatePassword', [UserController::class, 'updatePassword']);
-Route::middleware('auth:sanctum')->delete('/delete-account', [UserController::class, 'deleteAccount']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/updateUser', [UserController::class, 'updateUser']);
+    Route::put('/updatePassword', [UserController::class, 'updatePassword']);
+    Route::delete('/delete-account', [UserController::class, 'deleteAccount']);
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

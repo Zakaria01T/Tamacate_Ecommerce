@@ -2,108 +2,67 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Models\Panier;
-use App\Models\Product;
-use App\Http\Controllers\Controller;  
+use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
+use App\Models\Panier;
+use Illuminate\Support\Facades\Auth;
 
 class PanierController extends Controller
 {
+
     public function index()
     {
-        $userId = auth()->user()->id; 
-        $panier = Panier::where('user_id', $userId)->first();
+        $paniers = Panier::where('user_id', Auth::id())->with('product')->get();
+        return response()->json($paniers);
+    }
 
-        if (!$panier) {
-            return response()->json(['error' => 'Cart not found'], 404);
-        }
 
-        return response()->json([
-            'panier' => $panier->load('products')
+    public function store(Request $request)
+{
+    try {
+        \Log::info('Incoming request data:', $request->all());
+
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
         ]);
+
+        $panier = Panier::updateOrCreate(
+            [
+                'user_id' => Auth::id(),
+                'product_id' => $request->product_id,
+            ],
+            ['quantity' => $request->quantity]
+        );
+
+        return response()->json(['message' => 'Product added to panier', 'panier' => $panier], 201);
+    } catch (\Exception $e) {
+        \Log::error('Error in store method:', ['error' => $e->getMessage()]);
+        return response()->json(['message' => 'An error occurred while adding the product to the panier.'], 500);
     }
+}
 
-    public function addToCart(Request $request, $productId)
-    {
-        $userId = auth()->user()->id;
-        $product = Product::find($productId);
 
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
 
-        $panier = Panier::firstOrCreate(['user_id' => $userId]);
-
-        $existingProduct = $panier->products()->where('product_id', $productId)->first();
-
-        if ($existingProduct) {
-            $panier->products()->updateExistingPivot($productId, [
-                'quantity' => $existingProduct->pivot->quantity + 1,
-                'price' => $product->price
-            ]);
-        } else {
-            $panier->products()->attach($productId, [
-                'quantity' => 1,
-                'price' => $product->price
-            ]);
-        }
-
-        return response()->json(['message' => 'Product added to cart']);
-    }
-
-    public function updateCart(Request $request, $productId)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'quantity' => 'required|integer|min:1'
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $userId = auth()->user()->id; 
+        $panier = Panier::where('user_id', Auth::id())->findOrFail($id);
+        $panier->update(['quantity' => $request->quantity]);
 
-        $panier = Panier::where('user_id', $userId)->first();
-
-        if (!$panier) {
-            return response()->json(['error' => 'Cart not found'], 404);
-        }
-
-        $product = $panier->products()->where('product_id', $productId)->first();
-
-        if (!$product) {
-            return response()->json(['error' => 'Product not in cart'], 404);
-        }
-
-        $panier->products()->updateExistingPivot($productId, [
-            'quantity' => $request->quantity
-        ]);
-
-        return response()->json(['message' => 'Cart updated']);
+        return response()->json(['message' => 'Panier updated', 'panier' => $panier]);
     }
 
-    public function removeFromCart($productId)
+
+    public function destroy($id)
     {
-        $userId = auth()->user()->id; 
-        $panier = Panier::where('user_id', $userId)->first();
+        $panier = Panier::where('user_id', Auth::id())->findOrFail($id);
+        $panier->delete();
 
-        if (!$panier) {
-            return response()->json(['error' => 'Cart not found'], 404);
-        }
-
-        $panier->products()->detach($productId);
-
-        return response()->json(['message' => 'Product removed from cart']);
-    }
-
-    public function clearCart()
-    {
-        $userId = auth()->user()->id; 
-
-        $panier = Panier::where('user_id', $userId)->first();
-
-        if (!$panier) {
-            return response()->json(['error' => 'Cart not found'], 404);
-        }
-
-        $panier->products()->detach();
-
-        return response()->json(['message' => 'Cart cleared']);
+        return response()->json(['message' => 'Product removed from panier']);
     }
 }

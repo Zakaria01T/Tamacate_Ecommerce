@@ -60,7 +60,7 @@ export default function CartItem({ item, onRemove }) {
 
                 {/* Prix et actions */}
                 <div className="text-right w-32">
-                    <p className="font-semibold">€{(item.price * quantity).toFixed(2)}</p>
+                    <p className="font-semibold">MAD{(item.price * quantity).toFixed(2)}</p>
                     <button
                         onClick={onRemove}
                         className="text-sm text-red-600 hover:text-red-700"

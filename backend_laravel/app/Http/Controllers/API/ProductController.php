@@ -13,10 +13,10 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        if($products->isEmpty()){
+        if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 200);
         }
-        return ProductResource::collection($products);
+        return $products;
     }
 
     public function store(Request $request)
@@ -25,32 +25,31 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|image',
+            'image' => 'required|string',
             'price' => 'required|numeric',
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
                 'errors' => $validate->errors()
             ], 400);
         }
-        $imageData = file_get_contents($request->file('image')->getRealPath());
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
+            'image' => $request->image,
             'price' => $request->price,
         ]);
         return response()->json([
-                        'data' => new ProductResource($product)
-                    ], 200);
+            'data' => new ProductResource($product)
+        ], 200);
     }
 
     public  function show($id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
         return new ProductResource($product);
@@ -59,7 +58,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
@@ -70,7 +69,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json([
                 'errors' => $validate->errors()
             ], 400);
@@ -97,7 +96,7 @@ class ProductController extends Controller
     public function destroy($id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
         $product->delete();

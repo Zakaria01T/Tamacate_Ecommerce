@@ -1,19 +1,25 @@
-import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { useNavigate, useLocation } from 'react-router-dom'
+// components/ProtectedRoute.js
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 
-export default function ProtectedRoute({ children, adminOnly = false }) {
-    const { userInfo } = useSelector((state) => state.auth)
-    const navigate = useNavigate()
-    const location = useLocation()
+export default function ProtectedRoute({ adminOnly = false }) {
+    const { userInfo } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (!userInfo) {
-            navigate('/login', { state: { from: location } })
+            navigate('/login', { state: { from: location } });
         } else if (adminOnly && !userInfo.isAdmin) {
-            navigate('/')
+            navigate('/');
         }
-    }, [userInfo, navigate, location, adminOnly])
+    }, [userInfo, navigate, location, adminOnly]);
 
-    return userInfo ? children : null
+    // Ne rend rien si l'utilisateur n'est pas autorisé
+    if (!userInfo || (adminOnly && !userInfo.isAdmin)) {
+        return null;
+    }
+
+    return <Outlet />; // Rendre les routes imbriquées
 }

@@ -13,9 +13,9 @@ export default function HomePage() {
         dispatch(fetchProducts())
     }, [dispatch])
 
-    const filteredItems = items.filter(product =>
+    const filteredItems = items.length > 0 ? items.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    ) : []
 
     return (
         <div className="container mx-auto p-4">

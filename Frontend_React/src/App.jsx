@@ -34,7 +34,6 @@ function App() {
           <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/product" element={<ProductForm />} />
-            <Route path="/admin/product/:id" element={<EditProductPage />} />
           </Route>
 
           {/* Routes d'authentification */}

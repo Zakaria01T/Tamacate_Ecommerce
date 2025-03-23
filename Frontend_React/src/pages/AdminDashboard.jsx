@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchProducts, deleteProduct } from '../redux/features/productSlice'
-import { HiFolderAdd } from 'react-icons/hi'
+import { HiDocumentAdd, HiFolderAdd, HiPlus } from 'react-icons/hi'
 
 const AdminDashboard = () => {
     const dispatch = useDispatch()
@@ -20,7 +20,7 @@ const AdminDashboard = () => {
                     to="/admin/product"
                     className="bg-green-600 text-white px-4 py-2 rounded-lg"
                 >
-                    <HiFolderAdd />
+                    <HiPlus className='text-xl' />
                 </Link>
             </div>
 
@@ -28,6 +28,7 @@ const AdminDashboard = () => {
                 <table className="w-full">
                     <thead className="bg-gray-100">
                         <tr>
+                            <th className="text-left p-4">Image</th>
                             <th className="text-left p-4">Nom</th>
                             <th className="text-left p-4">Prix</th>
                             <th className="text-left p-4">Stock</th>
@@ -36,14 +37,16 @@ const AdminDashboard = () => {
                     </thead>
 
                     <tbody>
-                        {items.map(product => (
+                        {items.length > 0 ? items.map(product => (
                             <tr key={product.id} className="border-b">
+                                <td className='p-4 w-20 h-20'><img src={product.image} /></td>
                                 <td className="p-4">{product.name}</td>
                                 <td className="p-4">€{product.price}</td>
                                 <td className="p-4">{product.stock}</td>
                                 <td className="p-4 space-x-2">
                                     <Link
-                                        to={`/admin/product/${product._id}`}
+                                        to={`/admin/product/`}
+                                        state={{ product }}
                                         className="text-blue-600 hover:underline"
                                     >
                                         Modifier
@@ -56,7 +59,7 @@ const AdminDashboard = () => {
                                     </button>
                                 </td>
                             </tr>
-                        ))}
+                        )) : null}
                     </tbody>
                 </table>
             </div>

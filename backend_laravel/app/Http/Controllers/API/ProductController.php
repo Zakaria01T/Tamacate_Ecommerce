@@ -16,6 +16,9 @@ class ProductController extends Controller
         if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 200);
         }
+        foreach ($products as $product) {
+            $product->image = 'data:image/jpeg;base64,' . $product->image;
+        }
         return $products;
     }
 
@@ -27,6 +30,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'image' => 'required|string',
             'price' => 'required|numeric',
+            'stock' => 'required|numeric'
         ]);
 
         if ($validate->fails()) {
@@ -35,10 +39,13 @@ class ProductController extends Controller
             ], 400);
         }
 
+
+
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'image' => $request->image,
+            'stock' => $request->stock,
             'price' => $request->price,
         ]);
         return response()->json([
@@ -75,17 +82,13 @@ class ProductController extends Controller
             ], 400);
         }
 
-        if ($request->hasFile('image')) {
-            $imageData = file_get_contents($request->file('image')->getRealPath());
-        } else {
-            $imageData = $product->image;
-        }
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
-            'price' => $request->price,
+            'image' => $request->image,
+            'stock' => $request->stock,
+            'price' => $request->price
         ]);
         return response()->json([
             'message' => 'Product updated successfully',

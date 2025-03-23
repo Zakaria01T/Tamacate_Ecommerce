@@ -1,47 +1,90 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { API } from '../api/api'
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { API } from '../api/api';
+import { useDispatch } from 'react-redux';
+import { createProduct, updateProduct } from '../redux/features/productSlice';
 
-export default function ProductForm({
-    onSubmit,
-    initialValues,
-    isEditing = false
-}) {
-    const navigate = useNavigate()
+export default function ProductForm() {
+    const location = useLocation();
+    const [isEditing, setIsEditing] = useState(false);
+    const initialValues = location.state?.product || {};
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         name: '',
         price: 0,
         description: '',
-        image: '',
+        image: null,
+        stock: 0,
         ...initialValues
-    })
+    });
 
-    // Update form data when initialValues change
+
     useEffect(() => {
         if (initialValues) {
+            setIsEditing(true);
             setFormData(prev => ({
                 ...prev,
                 ...initialValues,
-                price: initialValues.price || 0
-            }))
+                price: initialValues.price || 0,
+                stock: initialValues.stock || 0
+            }));
         }
-    }, [initialValues])
+    }, [initialValues]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: name === 'price' || name === 'stock' ? Number(value) : value
-        }))
-    }
+    const handleChange = async (e) => {
+        const { name, value, files } = e.target;
+        if (name === 'image') {
+            // Convert the image file to a Base64 string
+            const file = files[0];
+            if (file) {
+                const base64 = await convertToBase64(file);
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: base64 // Store the Base64 string
+                }));
+            }
+        } else {
+            // Handle other inputs
+            setFormData(prev => ({
+                ...prev,
+                [name]: name === 'price' || name === 'stock' ? Number(value) : value
+            }));
+        }
+    };
 
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        API.post('/products', formData)
-            .then(response => {
-                console.log(response.data)
-            })
-    }
+    // Helper function to convert a file to Base64
+    const convertToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result.split(',')[1]); // Extract Base64 data
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            const endpoint = isEditing ? `/products/${initialValues.id}` : '/products';
+            const method = isEditing ? 'put' : 'post';
+
+            const response = await API[method](endpoint, formData);
+
+            if (isEditing) {
+                dispatch(updateProduct(response.data));
+            } else {
+                dispatch(createProduct(response.data));
+            }
+
+            alert(`Product ${isEditing ? 'updated' : 'created'} successfully!`);
+            navigate(-1);
+        } catch (error) {
+            console.error('Error saving product:', error);
+            alert('Failed to save product. Please try again.');
+        }
+    };
 
     return (
         <form onSubmit={handleSubmit} className="container mx-auto space-y-6 overflow-y-scroll h-screen hide-scrollbar p-4">
@@ -65,7 +108,7 @@ export default function ProductForm({
                     <input
                         type="number"
                         name="price"
-                        step="0.01"
+                        step="0.1"
                         min="0"
                         value={formData.price}
                         onChange={handleChange}
@@ -87,16 +130,26 @@ export default function ProductForm({
 
                 {/* Champ Image */}
                 <div>
-                    <label className="block mb-2 font-medium">URL de l'image</label>
+                    <label className="block mb-2 font-medium">l'image</label>
                     <input
-                        type="url"
+                        type="file"
                         name="image"
-                        value={formData.image}
+                        accept="image/*"
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
-                        required
+                        required={!isEditing} // Only required for new products
                     />
                 </div>
+
+                {/* Afficher l'image */}
+                {formData.image && (
+                    <img
+                        src={formData.image}
+                        alt="Product"
+                        className="w-32 h-32 object-cover rounded-lg"
+                    />
+                )}
+
 
                 {/* Champ Stock */}
                 <div>
@@ -108,21 +161,8 @@ export default function ProductForm({
                         value={formData.stock}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
-                        required
                     />
                 </div>
-
-                {/* Prévisualisation de l'image */}
-                {!formData.image && (
-                    <div className="mt-4">
-                        <p className="mb-2 font-medium">Prévisualisation :</p>
-                        <img
-                            src={formData.image}
-                            alt="Preview"
-                            className="w-48 h-48 object-cover rounded-lg border"
-                        />
-                    </div>
-                )}
             </div>
 
             <div className="flex justify-end gap-4 mt-8">
@@ -137,9 +177,9 @@ export default function ProductForm({
                     type="submit"
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                    {isEditing ? 'Mettre à jour' : 'Créer le produit'}
+                    {isEditing ? 'Update' : 'Add product'}
                 </button>
             </div>
         </form>
-    )
+    );
 }

@@ -16,50 +16,72 @@ class ProductController extends Controller
         if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 200);
         }
-        foreach ($products as $product) {
-            $product->image = 'data:image/jpeg;base64,' . $product->image;
-        }
-        return $products;
+
+        // Encoder chaque image en base64 avant de retourner la réponse
+        $products->transform(function ($product) {
+            $product->image = $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null;
+            return $product;
+        });
+
+        return response()->json(['data' => $products], 200);
     }
 
     public function store(Request $request)
     {
-
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             'price' => 'required|numeric',
-            'stock' => 'required|numeric'
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
-            return response()->json([
-                'errors' => $validate->errors()
-            ], 400);
+            return response()->json(['errors' => $validate->errors()], 400);
         }
 
-
+        $imageData = file_get_contents($request->file('image')->getRealPath());
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
-            'stock' => $request->stock,
+            'image' => $imageData,
             'price' => $request->price,
+            'category_id' => $request->category_id,
+            'stock' => $request->stock,
         ]);
+
         return response()->json([
-            'data' => new ProductResource($product)
+            'message' => 'Product created successfully',
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => 'data:image/png;base64,' . base64_encode($product->image),
+                'price' => $product->price,
+            ]
         ], 200);
     }
 
-    public  function show($id)
+    public function show($id)
     {
         $product = Product::find($id);
         if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-        return new ProductResource($product);
+
+        return response()->json([
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
+                'price' => $product->price,
+                'category_id' => $product->category_id,
+                'stock' => $product->stock,
+            ]
+        ], 200);
     }
 
     public function update(Request $request, $id)
@@ -72,27 +94,42 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric',
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
-            return response()->json([
-                'errors' => $validate->errors()
-            ], 400);
+            return response()->json(['errors' => $validate->errors()], 400);
         }
 
+        if ($request->hasFile('image')) {
+            $imageData = file_get_contents($request->file('image')->getRealPath());
+        } else {
+            $imageData = $product->image;
+        }
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
+            'image' => $imageData,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
             'stock' => $request->stock,
-            'price' => $request->price
         ]);
+
         return response()->json([
             'message' => 'Product updated successfully',
-            'data' => new ProductResource($product)
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
+                'price' => $product->price,
+                'category_id' => $product->category_id,
+                'stock' => $product->stock,
+            ]
         ], 200);
     }
 

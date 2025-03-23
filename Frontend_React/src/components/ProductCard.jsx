@@ -8,7 +8,7 @@ export default function ProductCard({ product }) {
     const navigate = useNavigate()
 
     const addPanier = () => {
-        if (true) {
+        if (userInfo) {
             dispatch(addToCart(product))
         } else {
             navigate('/login')
@@ -16,14 +16,14 @@ export default function ProductCard({ product }) {
     }
     return (
         <div className="border p-4 rounded-lg shadow-lg">
-            <img src={product.image} alt={product.title} className="h-48 w-full object-cover" />
-            <h3 className="text-xl font-bold mt-2">{product.title}</h3>
-            <p className="text-gray-600">{product.price}€</p>
+            <img src={product.image} alt={product.name} className="h-48 w-full object-cover" />
+            <h5 className="text-base font-bold mt-2">{product.name}</h5>
+            <p className="text-orange-600 text-lg">{product.price}€</p>
             <button
                 onClick={() => addPanier()}
                 className="bg-green-500 text-white p-2 w-full mt-2"
             >
-                Ajouter au panier
+                Add to cart
             </button>
         </div>
     )

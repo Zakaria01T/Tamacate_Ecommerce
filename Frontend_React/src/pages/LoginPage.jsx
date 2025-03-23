@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser } from '../redux/features/authSlice'
 import LoadingSpinner from '../components/LoadingSpinner'
+import { use } from 'react'
 
 export default function LoginPage() {
     const [credentials, setCredentials] = useState({ email: '', password: '' })
@@ -10,15 +11,20 @@ export default function LoginPage() {
     const navigate = useNavigate()
     const { status, error } = useSelector((state) => state.auth)
 
+    useEffect(() => {
+        if (status === 'succeeded') {
+            navigate('/')
+        }
+    }, [status, navigate])
+
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const result = await dispatch(loginUser(credentials))
-        if (result.payload) navigate('/')
+        dispatch(loginUser(credentials))
     }
 
     return (
         <div className="container mx-auto p-4 max-w-md">
-            <h1 className="text-3xl font-bold mb-6">Connexion</h1>
+            <h1 className="text-3xl font-bold mb-6">Login</h1>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
@@ -26,14 +32,14 @@ export default function LoginPage() {
                     <input
                         type="email"
                         className="w-full p-2 border rounded"
-                        value={credentials.email}
+                        value={credentials?.email}
                         onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
                         required
                     />
                 </div>
 
                 <div>
-                    <label className="block mb-2">Mot de passe</label>
+                    <label className="block mb-2">Password</label>
                     <input
                         type="password"
                         className="w-full p-2 border rounded"
@@ -50,14 +56,14 @@ export default function LoginPage() {
                     disabled={status === 'loading'}
                     className="w-full bg-blue-600 text-white p-2 rounded disabled:bg-gray-400"
                 >
-                    {status === 'loading' ? <LoadingSpinner /> : 'Se connecter'}
+                    {status === 'loading' ? <LoadingSpinner /> : 'Sign in'}
                 </button>
             </form>
 
             <div className="mt-4 text-center">
-                <span className="text-gray-600">Nouveau client ? </span>
+                <span className="text-gray-600">You don't have account? </span>
                 <Link to="/register" className="text-blue-600 hover:underline">
-                    Créer un compte
+                    register
                 </Link>
             </div>
         </div>

@@ -22,7 +22,7 @@ class AuthController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()], 422);
+                return response()->json(['message' => $validator->errors()], 422);
             }
 
             if (Auth::attempt($request->only('email', 'password'))) {
@@ -30,16 +30,19 @@ class AuthController extends Controller
                 $token = $user->createToken('auth-token')->plainTextToken;
 
                 return response()->json([
-                    'message' => 'Login successful',
-                    'user' => $user,
-                    'token' => $token,
+                    'user' => [
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'isAdmin' => $user->user_role
+                    ],
+                    'token' => $token
                 ], 200);
             } else {
-                return response()->json(['error' => 'Invalid credentials'], 401);
+                return response()->json(['message' => 'Email or Password is invalid'], 401);
             }
         } catch (Exception $e) {
             Log::error('Login error: ' . $e->getMessage());
-            return response()->json(['error' => 'An error occurred during login'], 500);
+            return response()->json(['message' => 'An error occurred during login'], 500);
         }
     }
 
@@ -64,7 +67,7 @@ class AuthController extends Controller
             $user->password = bcrypt($request->password);
 
             if ($user->save()) {
-                return response()->json(['message' => 'Sign up successful', 'user' => $user], 201);
+                return response()->json(['message' => 'Sign up successful'], 201);
             } else {
                 return response()->json(['error' => 'Sign up failed'], 500);
             }
@@ -103,9 +106,9 @@ class AuthController extends Controller
         }
     }
 
-    
 
-    
+
+
 
     public function checkEmail(Request $request)
     {

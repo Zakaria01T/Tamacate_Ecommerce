@@ -1,18 +1,18 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { API } from '../../api/api'
 
-export const fetchProducts = createAsyncThunk('products/fetchAll', async (search = '') => {
-  const { data } = await API.get(`https://fakestoreapi.com/products`)
+export const fetchProducts = createAsyncThunk('products/fetchAll', async () => {
+  const { data } = await API.get(`/products`)
   return data
 })
 
 export const createProduct = createAsyncThunk('products/create', async (productData) => {
-  const { data } = await API.post('/api/products', productData)
+  const { data } = await API.post('/products', productData)
   return data
 })
 
 export const updateProduct = createAsyncThunk('products/update', async ({ id, productData }) => {
-  const { data } = await API.put(`/api/products/${id}`, productData)
+  const { data } = await API.put(`/products/${id}`, productData)
   return data
 })
 

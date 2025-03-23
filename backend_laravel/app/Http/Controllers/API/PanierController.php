@@ -14,34 +14,38 @@ class PanierController extends Controller
     public function index()
     {
         $paniers = Panier::where('user_id', Auth::id())->with('product')->get();
-        return response()->json($paniers);
+
+        // Convertir les données en un format UTF-8 sûr
+        $paniers = json_decode(json_encode($paniers, JSON_UNESCAPED_UNICODE), true);
+
+        return response()->json($paniers, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
 
     public function store(Request $request)
-{
-    try {
-        \Log::info('Incoming request data:', $request->all());
+    {
+        try {
+            \Log::info('Incoming request data:', $request->all());
 
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+            ]);
 
-        $panier = Panier::updateOrCreate(
-            [
-                'user_id' => Auth::id(),
-                'product_id' => $request->product_id,
-            ],
-            ['quantity' => $request->quantity]
-        );
+            $panier = Panier::updateOrCreate(
+                [
+                    'user_id' => Auth::id(),
+                    'product_id' => $request->product_id,
+                ],
+                ['quantity' => $request->quantity]
+            );
 
-        return response()->json(['message' => 'Product added to panier', 'panier' => $panier], 201);
-    } catch (\Exception $e) {
-        \Log::error('Error in store method:', ['error' => $e->getMessage()]);
-        return response()->json(['message' => 'An error occurred while adding the product to the panier.'], 500);
+            return response()->json(['message' => 'Product added to panier', 'panier' => $panier], 201);
+        } catch (\Exception $e) {
+            \Log::error('Error in store method:', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'An error occurred while adding the product to the panier.'], 500);
+        }
     }
-}
 
 
 

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\ClientOrderController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\PanierController;
@@ -26,9 +27,21 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 //products
+Route::get('/products', [ProductController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('products', ProductController::class);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
+    Route::get('/products/{id}', [ProductController::class, 'show']);
 });
+
+//categories
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::post('/categories', [CategoryController::class, 'store']);
+Route::put('/categories/{id}', [CategoryController::class, 'update']);
+Route::delete('/categories/{id}', [CategoryController::class, 'delete']);
+
 
 //paniers
 Route::middleware('auth:sanctum')->group(function () {

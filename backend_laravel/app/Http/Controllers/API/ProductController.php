@@ -17,6 +17,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'No products found'], 200);
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         $products->transform(function ($product) {
             $product->image = base64_encode($product->image);
@@ -25,6 +26,11 @@ class ProductController extends Controller
 
         return ProductResource::collection($products);
 =======
+=======
+        foreach ($products as $product) {
+            $product->image = 'data:image/jpeg;base64,' . $product->image;
+        }
+>>>>>>> 6dfbecf9f77d13589e2892b3224c42c962c5ffde
         return $products;
 >>>>>>> f6460a1635cffe4962fe94bb4fb9bf0232a22d55
     }
@@ -40,7 +46,11 @@ class ProductController extends Controller
             'image' => 'required|string',
 >>>>>>> f6460a1635cffe4962fe94bb4fb9bf0232a22d55
             'price' => 'required|numeric',
+<<<<<<< HEAD
             'stock'=>'required|numeric',
+=======
+            'stock' => 'required|numeric'
+>>>>>>> 6dfbecf9f77d13589e2892b3224c42c962c5ffde
         ]);
 
         if ($validate->fails()) {
@@ -56,10 +66,13 @@ class ProductController extends Controller
         }
 >>>>>>> f6460a1635cffe4962fe94bb4fb9bf0232a22d55
 
+
+
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
             'image' => $request->image,
+            'stock' => $request->stock,
             'price' => $request->price,
             'category_id' => $request->category_id,
             'stock' => $request->stock
@@ -110,19 +123,28 @@ class ProductController extends Controller
             ], 400);
         }
 
+<<<<<<< HEAD
         if ($request->has('image')) {
             $imageData = base64_decode($request->image);
         } else {
             $imageData = $product->image;
         }
+=======
+>>>>>>> 6dfbecf9f77d13589e2892b3224c42c962c5ffde
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
+<<<<<<< HEAD
             'image' => $imageData,
             "category_id" => $request->category_id,
             'price' => $request->price,
             'stock' => $request->stock
+=======
+            'image' => $request->image,
+            'stock' => $request->stock,
+            'price' => $request->price
+>>>>>>> 6dfbecf9f77d13589e2892b3224c42c962c5ffde
         ]);
         return response()->json([
             'message' => 'Product updated successfully',

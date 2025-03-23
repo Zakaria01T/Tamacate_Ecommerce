@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../redux/features/authSlice'
-import { HiShoppingCart } from 'react-icons/hi'
+import { HiLogout, HiShoppingCart } from 'react-icons/hi'
 
 export default function Header() {
     const { userInfo } = useSelector((state) => state.auth)
@@ -29,14 +29,14 @@ export default function Header() {
                         <div className="flex items-center gap-4">
                             {userInfo?.isAdmin && (
                                 <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-                                    Admin
+                                    Dashboard
                                 </Link>
                             )}
                             <button
                                 onClick={() => dispatch(logout())}
-                                className="text-gray-600 hover:text-blue-600"
+                                className=" text-gray-600 hover:text-red-600 text-2xl"
                             >
-                                Logout
+                                <HiLogout />
                             </button>
                         </div>
                     ) : (

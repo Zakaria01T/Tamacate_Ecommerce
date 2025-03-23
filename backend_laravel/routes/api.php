@@ -4,8 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ClientOrderController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\PanierController;
+use App\Http\Controllers\API\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +38,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/paniers/{id}', [PanierController::class, 'destroy']);
 });
 
+// order
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('payment_order', [PaymentController::class, 'makeOrder']);
+    Route::get('client_order', [ClientOrderController::class, 'index']);
+    Route::get('client_order/{id}', [ClientOrderController::class, 'vieworder']);
+});
 
 //user
 Route::middleware('auth:sanctum')->group(function () {

@@ -15,8 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->binary('image'); 
+            $table->binary('image');
             $table->decimal('price', 8, 2);
+            $table->bigInteger('category_id');
+            $table->integer('stock')->default(0);
             $table->timestamps();
         });
     }

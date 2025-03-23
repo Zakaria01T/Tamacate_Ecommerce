@@ -33,6 +33,8 @@ class ProductController extends Controller
             'description' => 'required|string',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric',
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
@@ -46,6 +48,8 @@ class ProductController extends Controller
             'description' => $request->description,
             'image' => $imageData,
             'price' => $request->price,
+            'category_id' => $request->category_id,
+            'stock' => $request->stock,
         ]);
 
         return response()->json([
@@ -74,6 +78,8 @@ class ProductController extends Controller
                 'description' => $product->description,
                 'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
                 'price' => $product->price,
+                'category_id' => $product->category_id,
+                'stock' => $product->stock,
             ]
         ], 200);
     }
@@ -90,6 +96,8 @@ class ProductController extends Controller
             'description' => 'required|string',
             'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric',
+            'category_id' => 'required',
+            'stock' => 'required|numeric',
         ]);
 
         if ($validate->fails()) {
@@ -107,6 +115,8 @@ class ProductController extends Controller
             'description' => $request->description,
             'image' => $imageData,
             'price' => $request->price,
+            'category_id' => $request->category_id,
+            'stock' => $request->stock,
         ]);
 
         return response()->json([
@@ -117,6 +127,8 @@ class ProductController extends Controller
                 'description' => $product->description,
                 'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
                 'price' => $product->price,
+                'category_id' => $product->category_id,
+                'stock' => $product->stock,
             ]
         ], 200);
     }

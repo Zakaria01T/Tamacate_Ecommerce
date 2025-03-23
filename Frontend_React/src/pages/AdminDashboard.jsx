@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchProducts, deleteProduct } from '../redux/features/productSlice'
 import { HiDocumentAdd, HiFolderAdd, HiPlus } from 'react-icons/hi'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const AdminDashboard = () => {
     const dispatch = useDispatch()
@@ -41,7 +42,7 @@ const AdminDashboard = () => {
                     </thead>
 
                     <tbody>
-                        {items.length > 0 ? items.map(product => (
+                        {status === 'succeeded' ? items.map(product => (
                             <tr key={product.id} className="border-b">
                                 <td className='p-4 w-20 h-20 rounded-md'><img src={product.image} /></td>
                                 <td className="p-4">{product.name}</td>
@@ -56,14 +57,14 @@ const AdminDashboard = () => {
                                         Modifier
                                     </Link>
                                     <button
-                                        onClick={() => dispatch(deleteProduct(product.id))}
+                                        onClick={() => handleDelete()}
                                         className="text-red-600 hover:underline"
                                     >
                                         Supprimer
                                     </button>
                                 </td>
                             </tr>
-                        )) : null}
+                        )) : <LoadingSpinner />}
                     </tbody>
                 </table>
             </div>

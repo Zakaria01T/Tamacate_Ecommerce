@@ -14,16 +14,12 @@ class ProductController extends Controller
     {
         $products = Product::all();
         if ($products->isEmpty()) {
-            return response()->json(['message' => 'No products found'], 200);
+            return response()->json([], 200);
         }
 
-        // Encoder chaque image en base64 avant de retourner la réponse
-        $products->transform(function ($product) {
-            $product->image = $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null;
-            return $product;
-        });
 
-        return response()->json(['data' => $products], 200);
+
+        return response()->json($products, 200);
     }
 
     public function store(Request $request)
@@ -31,7 +27,7 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
+            'image' => 'required|string',
             'price' => 'required|numeric',
             'category_id' => 'required',
             'stock' => 'required|numeric',
@@ -41,12 +37,11 @@ class ProductController extends Controller
             return response()->json(['errors' => $validate->errors()], 400);
         }
 
-        $imageData = file_get_contents($request->file('image')->getRealPath());
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
+            'image' => $request->image,
             'price' => $request->price,
             'category_id' => $request->category_id,
             'stock' => $request->stock,
@@ -54,13 +49,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product created successfully',
-            'data' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'image' => 'data:image/png;base64,' . base64_encode($product->image),
-                'price' => $product->price,
-            ]
+            'data' => $product
         ], 200);
     }
 
@@ -71,17 +60,7 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not found'], 404);
         }
 
-        return response()->json([
-            'data' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
-                'price' => $product->price,
-                'category_id' => $product->category_id,
-                'stock' => $product->stock,
-            ]
-        ], 200);
+        return response()->json([$product], 200);
     }
 
     public function update(Request $request, $id)
@@ -94,7 +73,7 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'sometimes|string',
             'price' => 'required|numeric',
             'category_id' => 'required',
             'stock' => 'required|numeric',
@@ -104,16 +83,12 @@ class ProductController extends Controller
             return response()->json(['errors' => $validate->errors()], 400);
         }
 
-        if ($request->hasFile('image')) {
-            $imageData = file_get_contents($request->file('image')->getRealPath());
-        } else {
-            $imageData = $product->image;
-        }
+
 
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $imageData,
+            'image' => $request->image,
             'price' => $request->price,
             'category_id' => $request->category_id,
             'stock' => $request->stock,
@@ -121,15 +96,7 @@ class ProductController extends Controller
 
         return response()->json([
             'message' => 'Product updated successfully',
-            'data' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'description' => $product->description,
-                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
-                'price' => $product->price,
-                'category_id' => $product->category_id,
-                'stock' => $product->stock,
-            ]
+            'data' => $product
         ], 200);
     }
 

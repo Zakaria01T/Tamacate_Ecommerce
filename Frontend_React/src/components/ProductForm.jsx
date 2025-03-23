@@ -7,6 +7,7 @@ import { createProduct, updateProduct } from '../redux/features/productSlice';
 export default function ProductForm() {
     const location = useLocation();
     const [isEditing, setIsEditing] = useState(false);
+    const [categories, setCategories] = useState([]);
     const initialValues = location.state?.product || {};
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -21,6 +22,7 @@ export default function ProductForm() {
 
 
     useEffect(() => {
+
         if (initialValues?.id) {
             setIsEditing(true);
             setFormData(prev => ({
@@ -32,27 +34,13 @@ export default function ProductForm() {
         }
     }, [initialValues]);
 
-<<<<<<< HEAD
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: name === 'price' || name === 'stock' ? Number(value) : value
-            
-        }))
+    const fetchCategories = () => {
+        try {
+            const data = API.get('/categories')
+        }
+        catch { }
     }
 
-    
-
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        API.post('/products', formData)
-            .then(response => {
-                console.log(response.data)
-              })
-              console.log(formData);
-    }
-=======
     const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
@@ -62,7 +50,7 @@ export default function ProductForm() {
                 const base64 = await convertToBase64(file);
                 setFormData(prev => ({
                     ...prev,
-                    [name]: base64 // Store the Base64 string
+                    [name]: "data:image/png;base64," + base64 // Store the Base64 string
                 }));
             }
         } else {
@@ -106,7 +94,6 @@ export default function ProductForm() {
             alert('Failed to save product. Please try again.');
         }
     };
->>>>>>> 6dfbecf9f77d13589e2892b3224c42c962c5ffde
 
     return (
         <form onSubmit={handleSubmit} className="container mx-auto space-y-6 overflow-y-scroll h-screen hide-scrollbar p-4">
@@ -148,6 +135,10 @@ export default function ProductForm() {
                         onChange={handleChange}
                         className="w-full p-2 border rounded h-32"
                     />
+                </div>
+
+                <div>
+                    <label className="block mb-2 font-medium">Category</label>
                 </div>
 
                 {/* Champ Image */}

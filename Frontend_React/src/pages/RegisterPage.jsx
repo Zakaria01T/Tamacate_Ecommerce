@@ -22,7 +22,7 @@ export default function RegisterPage() {
     const handleSubmit = async (e) => {
         e.preventDefault()
         const result = await dispatch(registerUser(formData))
-        if (result.payload) navigate('/')
+        if (result.payload) navigate('/login')
     }
 
     return (

@@ -17,7 +17,7 @@ export const updateProduct = createAsyncThunk('products/update', async ({ id, pr
 })
 
 export const deleteProduct = createAsyncThunk('products/delete', async (id) => {
-  await API.delete(`/api/products/${id}`)
+  await API.delete(`/products/${id}`)
   return id
 })
 

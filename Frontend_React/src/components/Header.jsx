@@ -27,7 +27,7 @@ export default function Header() {
 
                     {userInfo ? (
                         <div className="flex items-center gap-4">
-                            {userInfo?.isAdmin && (
+                            {userInfo?.isAdmin === 1 && (
                                 <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                                     Dashboard
                                 </Link>

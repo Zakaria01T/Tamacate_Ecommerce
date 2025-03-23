@@ -21,7 +21,7 @@ export default function ProductForm() {
 
 
     useEffect(() => {
-        if (initialValues) {
+        if (initialValues?.id) {
             setIsEditing(true);
             setFormData(prev => ({
                 ...prev,

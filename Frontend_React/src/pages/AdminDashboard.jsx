@@ -12,6 +12,10 @@ const AdminDashboard = () => {
         dispatch(fetchProducts())
     }, [dispatch])
 
+    const handleDelete = (id) => {
+        dispatch(deleteProduct(id))
+    }
+
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
@@ -28,7 +32,7 @@ const AdminDashboard = () => {
                 <table className="w-full">
                     <thead className="bg-gray-100">
                         <tr>
-                            <th className="text-left p-4">Image</th>
+                            <th className="text-left p-4">Product</th>
                             <th className="text-left p-4">Nom</th>
                             <th className="text-left p-4">Prix</th>
                             <th className="text-left p-4">Stock</th>
@@ -39,7 +43,7 @@ const AdminDashboard = () => {
                     <tbody>
                         {items.length > 0 ? items.map(product => (
                             <tr key={product.id} className="border-b">
-                                <td className='p-4 w-20 h-20'><img src={product.image} /></td>
+                                <td className='p-4 w-20 h-20 rounded-md'><img src={product.image} /></td>
                                 <td className="p-4">{product.name}</td>
                                 <td className="p-4">€{product.price}</td>
                                 <td className="p-4">{product.stock}</td>
@@ -52,7 +56,7 @@ const AdminDashboard = () => {
                                         Modifier
                                     </Link>
                                     <button
-                                        onClick={() => dispatch(deleteProduct(product._id))}
+                                        onClick={() => dispatch(deleteProduct(product.id))}
                                         className="text-red-600 hover:underline"
                                     >
                                         Supprimer

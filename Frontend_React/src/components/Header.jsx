@@ -11,19 +11,19 @@ export default function Header() {
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50">
             <nav className="container mx-auto p-4 flex justify-between items-center">
-                <Link to="/" className="text-2xl font-bold text-blue-600">
+                <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-blue-600">
                     TAMACAT.com
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    <Link to="/cart" className="flex items-center ">
+                    {!userInfo?.isAdmin && <Link to="/cart" className="flex items-center ">
                         <HiShoppingCart className='text-2xl' />
                         {items.length > 0 && (
                             <span className="bg-red-500 text-white  text-xs px-2 rounded-full">
                                 {items.length}
                             </span>
                         )}
-                    </Link>
+                    </Link>}
 
                     {userInfo ? (
                         <div className="flex items-center gap-4">

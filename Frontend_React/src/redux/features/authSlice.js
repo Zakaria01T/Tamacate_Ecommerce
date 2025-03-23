@@ -25,18 +25,17 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
-        userInfo: localStorage.getItem('userInfo')
-            ? JSON.parse(localStorage.getItem('userInfo'))
-            : null,
+        isAdmin: localStorage.getItem('csrf_token')?.split('/')[1] == 1,
+        token: localStorage.getItem('csrf_token') || null,
         status: 'idle', // 'idle', 'loading', 'succeeded', 'failed'
         error: null,
     },
     reducers: {
         logout: (state) => {
-            state.userInfo = null;
+            state.token = null;
+            state.isAdmin = false;
             state.status = 'idle';
             state.error = null;
-            localStorage.removeItem('userInfo');
             localStorage.removeItem('csrf_token'); // Supprimez également le token CSRF si nécessaire
         },
     },
@@ -59,8 +58,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.userInfo = action.payload;
-                localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
+                state.token = action.payload.token;
                 localStorage.setItem('csrf_token', action.payload.token);
             })
             .addCase(loginUser.rejected, (state, action) => {

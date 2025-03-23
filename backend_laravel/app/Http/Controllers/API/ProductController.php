@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
@@ -16,9 +15,6 @@ class ProductController extends Controller
         if ($products->isEmpty()) {
             return response()->json([], 200);
         }
-
-
-
         return response()->json($products, 200);
     }
 

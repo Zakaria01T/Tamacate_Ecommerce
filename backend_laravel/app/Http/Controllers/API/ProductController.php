@@ -13,27 +13,32 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        if($products->isEmpty()){
+        if ($products->isEmpty()) {
             return response()->json(['message' => 'No products found'], 200);
         }
-        return ProductResource::collection($products);
+
+        // Encoder chaque image en base64 avant de retourner la réponse
+        $products->transform(function ($product) {
+            $product->image = $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null;
+            return $product;
+        });
+
+        return response()->json(['data' => $products], 200);
     }
 
     public function store(Request $request)
     {
-
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|image',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric',
         ]);
 
-        if($validate->fails()){
-            return response()->json([
-                'errors' => $validate->errors()
-            ], 400);
+        if ($validate->fails()) {
+            return response()->json(['errors' => $validate->errors()], 400);
         }
+
         $imageData = file_get_contents($request->file('image')->getRealPath());
 
         $product = Product::create([
@@ -42,38 +47,53 @@ class ProductController extends Controller
             'image' => $imageData,
             'price' => $request->price,
         ]);
+
         return response()->json([
-                        'data' => new ProductResource($product)
-                    ], 200);
+            'message' => 'Product created successfully',
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => 'data:image/png;base64,' . base64_encode($product->image),
+                'price' => $product->price,
+            ]
+        ], 200);
     }
 
-    public  function show($id)
+    public function show($id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
-        return new ProductResource($product);
+
+        return response()->json([
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
+                'price' => $product->price,
+            ]
+        ], 200);
     }
 
     public function update(Request $request, $id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
 
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required',
+            'image' => 'sometimes|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'price' => 'required|numeric',
         ]);
 
-        if($validate->fails()){
-            return response()->json([
-                'errors' => $validate->errors()
-            ], 400);
+        if ($validate->fails()) {
+            return response()->json(['errors' => $validate->errors()], 400);
         }
 
         if ($request->hasFile('image')) {
@@ -88,16 +108,23 @@ class ProductController extends Controller
             'image' => $imageData,
             'price' => $request->price,
         ]);
+
         return response()->json([
             'message' => 'Product updated successfully',
-            'data' => new ProductResource($product)
+            'data' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'image' => $product->image ? 'data:image/png;base64,' . base64_encode($product->image) : null,
+                'price' => $product->price,
+            ]
         ], 200);
     }
 
     public function destroy($id)
     {
         $product = Product::find($id);
-        if(!$product){
+        if (!$product) {
             return response()->json(['message' => 'Product not found'], 404);
         }
         $product->delete();

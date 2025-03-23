@@ -31,7 +31,7 @@ export default function CartPage() {
                     <div className="border-t pt-4 mt-4">
                         <div className="flex justify-between items-center">
                             <span className="text-xl font-bold">Total:</span>
-                            <span className="text-xl">€{total.toFixed(2)}</span>
+                            <span className="text-xl">MAD{total.toFixed(2)}</span>
                         </div>
 
                         <div className="flex justify-end gap-4 mt-6">

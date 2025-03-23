@@ -17,9 +17,20 @@ class Panier extends Model
         'quantity',
     ];
 
+<<<<<<< HEAD
     // A panier (cart) can have many products (through a pivot table)
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');
+=======
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+>>>>>>> f6460a1635cffe4962fe94bb4fb9bf0232a22d55
+    }
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
     }
 }

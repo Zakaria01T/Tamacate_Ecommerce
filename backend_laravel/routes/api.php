@@ -21,8 +21,8 @@ use App\Http\Controllers\API\PaymentController;
 */
 
 //login and register
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 //products
@@ -42,18 +42,28 @@ Route::middleware('auth:sanctum')->group(function () {
 // Route::apiResource('paniers', PanierController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+<<<<<<< HEAD
     Route::get("/paniers/paniercount", [PanierController::class, 'paniercount']);
     Route::get('/panier', [PanierController::class, 'index']);
     Route::post('/panier/add/', [PanierController::class, 'store']);
     Route::post('/panier/update/{productId}', [PanierController::class, 'update']);
     Route::get('/panier/remove/{productId}', [PanierController::class, 'destroy']);
     Route::get('/panier/clear', [PanierController::class, 'clearCart']);
+=======
+    Route::get('/paniers', [PanierController::class, 'index']);
+    Route::post('/paniers', [PanierController::class, 'store']);
+    Route::put('/paniers/{id}', [PanierController::class, 'update']);
+    Route::delete('/paniers/{id}', [PanierController::class, 'destroy']);
+>>>>>>> f6460a1635cffe4962fe94bb4fb9bf0232a22d55
 });
 
+
 //user
-Route::middleware('auth:sanctum')->put('/updateUser', [UserController::class, 'updateUser']);
-Route::middleware('auth:sanctum')->put('/updatePassword', [UserController::class, 'updatePassword']);
-Route::middleware('auth:sanctum')->delete('/delete-account', [UserController::class, 'deleteAccount']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::put('/updateUser', [UserController::class, 'updateUser']);
+    Route::put('/updatePassword', [UserController::class, 'updatePassword']);
+    Route::delete('/delete-account', [UserController::class, 'deleteAccount']);
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

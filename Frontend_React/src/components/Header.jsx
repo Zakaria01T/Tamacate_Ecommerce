@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../redux/features/authSlice'
+import { HiShoppingCart } from 'react-icons/hi'
 
 export default function Header() {
     const { userInfo } = useSelector((state) => state.auth)
@@ -11,14 +12,14 @@ export default function Header() {
         <header className="bg-white shadow-sm sticky top-0 z-50">
             <nav className="container mx-auto p-4 flex justify-between items-center">
                 <Link to="/" className="text-2xl font-bold text-blue-600">
-                    TAMACAT-Store
+                    TAMACAT.com
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    <Link to="/cart" className="flex items-center gap-1">
-                        🛒 Panier
+                    <Link to="/cart" className="flex items-center ">
+                        <HiShoppingCart className='text-2xl' />
                         {items.length > 0 && (
-                            <span className="bg-red-500 text-white px-2 rounded-full">
+                            <span className="bg-red-500 text-white  text-xs px-2 rounded-full">
                                 {items.length}
                             </span>
                         )}
@@ -26,8 +27,8 @@ export default function Header() {
 
                     {userInfo ? (
                         <div className="flex items-center gap-4">
-                            {userInfo.isAdmin && (
-                                <Link to="/admin" className="text-gray-600 hover:text-blue-600">
+                            {userInfo?.isAdmin && (
+                                <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                                     Admin
                                 </Link>
                             )}
@@ -35,12 +36,12 @@ export default function Header() {
                                 onClick={() => dispatch(logout())}
                                 className="text-gray-600 hover:text-blue-600"
                             >
-                                Déconnexion
+                                Logout
                             </button>
                         </div>
                     ) : (
-                        <Link to="/login" className="text-gray-600 hover:text-blue-600">
-                            Connexion
+                        <Link to="/login" className="bg-blue-600 font-semibold rounded-lg px-6 py-2 text-white hover:bg-blue-400">
+                            SignIn
                         </Link>
                     )}
                 </div>

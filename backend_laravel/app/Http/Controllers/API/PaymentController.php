@@ -18,8 +18,7 @@ class PaymentController extends Controller
 
 
     //fonction pour un ordre qui a une payment (payer jusque la commande arrive à la maison)
-    public function makeOrder()
-    {
+    public function makeOrder() {
         $order = new Order();
         $order->user_id = Auth()->user()->id;
         $total = 0;

@@ -4,8 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ProductController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\ClientOrderController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\PanierController;
+use App\Http\Controllers\API\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,16 +26,27 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 //products
+Route::apiResource('products', ProductController::class);
+// Route::middleware('auth:sanctum')->group(function () {
+// });
+
+//Orders :
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('products', ProductController::class);
+    Route::post('/makeOrder', [PaymentController::class, 'makeOrder']);
+    //show orders for a client
+    Route::get('/clientOrders', [ClientOrderController::class, 'index']);
+    Route::get("/vieworder/{id}", [ClientOrderController::class, 'vieworder']);
 });
 
 //paniers
+// Route::apiResource('paniers', PanierController::class);
+
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get("/paniers/paniercount", [PanierController::class, 'paniercount']);
     Route::get('/panier', [PanierController::class, 'index']);
-    Route::post('/panier/add/{productId}', [PanierController::class, 'addToCart']);
-    Route::post('/panier/update/{productId}', [PanierController::class, 'updateCart']);
-    Route::get('/panier/remove/{productId}', [PanierController::class, 'removeFromCart']);
+    Route::post('/panier/add/', [PanierController::class, 'store']);
+    Route::post('/panier/update/{productId}', [PanierController::class, 'update']);
+    Route::get('/panier/remove/{productId}', [PanierController::class, 'destroy']);
     Route::get('/panier/clear', [PanierController::class, 'clearCart']);
 });
 

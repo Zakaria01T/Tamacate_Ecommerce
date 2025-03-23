@@ -5,19 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Panier extends Model
+class OrderItem extends Model
 {
     use HasFactory;
-
-    protected $table = 'paniers';
-
+    protected $table = 'order_items';
     protected $fillable = [
-        'user_id',
+        'order_id',
         'product_id',
         'quantity',
     ];
-
-    // A panier (cart) can have many products (through a pivot table)
     public function product()
     {
         return $this->belongsTo(Product::class, 'product_id');

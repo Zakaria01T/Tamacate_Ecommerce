@@ -111,4 +111,12 @@ class UserController extends Controller
             return response()->json(['error' => 'An error occurred while deleting the account'], 500);
         }
     }
+    public function getNotAdmittedUsers()
+{
+    $users = \App\Models\User::where('user_role', 0)->get();
+
+    return response()->json([
+        'users' => $users
+    ], 200);
+}
 }

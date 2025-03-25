@@ -1,74 +1,68 @@
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { fetchProducts, deleteProduct } from '../redux/features/productSlice'
-import { HiDocumentAdd, HiFolderAdd, HiPlus } from 'react-icons/hi'
-import LoadingSpinner from '../components/LoadingSpinner'
+import React, { useState, useEffect } from 'react';
+import Turnover from '../components/Turnover';
+import Statistics from '../components/Statistics';
+import axios from 'axios';
 
 const AdminDashboard = () => {
-    const dispatch = useDispatch()
-    const { items, status } = useSelector((state) => state.products)
+  const [ordersData, setOrdersData] = useState([]);
+  const [productsData, setProductsData] = useState([]);
+  const [clientsData, setClientsData] = useState([]);
 
-    useEffect(() => {
-        dispatch(fetchProducts())
-    }, [dispatch])
+  useEffect(() => {
+    const fetchOrdersData = async () => {
+      try {
+        const token = localStorage.getItem('csrf_token');
+        const response = await axios.get('http://127.0.0.1:8000/api/orders', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOrdersData(response.data.orders || []);
+      } catch (error) {
+        console.error('Error fetching orders data:', error);
+      }
+    };
 
-    const handleDelete = (id) => {
-        dispatch(deleteProduct(id))
-    }
+    const fetchProductsData = async () => {
+      try {
+        const token = localStorage.getItem('csrf_token');
+        const response = await axios.get('http://127.0.0.1:8000/api/products', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setProductsData(response.data.products || []);
+      } catch (error) {
+        console.error('Error fetching products data:', error);
+      }
+    };
 
-    return (
-        <div className="container mx-auto p-4">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Dashboard</h1>
-                <Link
-                    to="/admin/product"
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg"
-                >
-                    <HiPlus className='text-xl' />
-                </Link>
-            </div>
+    const fetchClientsData = async () => {
+      try {
+        const token = localStorage.getItem('csrf_token');
+        const response = await axios.get('http://127.0.0.1:8000/api/users', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setClientsData(response.data.clients || []);
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching clients data:', error);
+      }
+    };
 
-            <div className="overflow-x-auto">
-                <table className="w-full">
-                    <thead className="bg-gray-100">
-                        <tr>
-                            <th className="text-left p-4">Product</th>
-                            <th className="text-left p-4">Nom</th>
-                            <th className="text-left p-4">Prix</th>
-                            <th className="text-left p-4">Stock</th>
-                            <th className="text-left p-4">Actions</th>
-                        </tr>
-                    </thead>
+    fetchOrdersData();
+    fetchProductsData();
+    fetchClientsData();
+  }, []);
 
-                    <tbody>
-                        {status === 'succeeded' ? items.map(product => (
-                            <tr key={product.id} className="border-b">
-                                <td className='p-4 w-20 h-20 rounded-md'><img src={product.image} /></td>
-                                <td className="p-4">{product.name}</td>
-                                <td className="p-4">€{product.price}</td>
-                                <td className="p-4">{product.stock}</td>
-                                <td className="p-4 space-x-2">
-                                    <Link
-                                        to={`/admin/product/`}
-                                        state={{ product }}
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        Modifier
-                                    </Link>
-                                    <button
-                                        onClick={() => handleDelete()}
-                                        className="text-red-600 hover:underline"
-                                    >
-                                        Supprimer
-                                    </button>
-                                </td>
-                            </tr>
-                        )) : <LoadingSpinner />}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="w-[95%] mx-auto mt-2">
+      <div>
+        <Statistics
+          ordersData={ordersData}
+          productsData={productsData}
+          clientsData={clientsData}
+        />
+        <Turnover salesData={clientsData} />
+      </div>
+    </div>
+  );
+};
+
 export default AdminDashboard;

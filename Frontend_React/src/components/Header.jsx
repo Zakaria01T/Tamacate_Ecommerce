@@ -4,30 +4,32 @@ import { logout } from '../redux/features/authSlice'
 import { HiLogout, HiShoppingCart } from 'react-icons/hi'
 
 export default function Header() {
-    const { isAdmin, token } = useSelector((state) => state.auth)
+    const { userInfo } = useSelector((state) => state.auth)
     const { items } = useSelector((state) => state.cart)
     const dispatch = useDispatch()
 
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50">
             <nav className="container mx-auto p-4 flex justify-between items-center">
-                <Link to={isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-blue-600">
+                <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-blue-600">
                     TAMACAT.com
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    {!isAdmin && <Link to="/cart" className="flex items-center ">
-                        <HiShoppingCart className='text-2xl' />
-                        {items.length > 0 && (
-                            <span className="bg-red-500 text-white  text-xs px-2 rounded-full">
-                                {items.length}
-                            </span>
-                        )}
+                    {!userInfo?.isAdmin && <Link to="/cart" className="flex items-center ">
+                        <div className="relative">
+                            <HiShoppingCart className='text-2xl' />
+                            {items.length > 0 && (
+                                <span className="bg-blue-500 text-white  text-xs px-1 rounded-full absolute -top-2 -right-2">
+                                    {items.length}
+                                </span>
+                            )}
+                        </div>
                     </Link>}
 
-                    {token ? (
+                    {userInfo ? (
                         <div className="flex items-center gap-4">
-                            {isAdmin && (
+                            {userInfo?.isAdmin === 1 && (
                                 <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                                     Dashboard
                                 </Link>

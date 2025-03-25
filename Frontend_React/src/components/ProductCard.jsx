@@ -1,15 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { addToCart } from '../redux/features/cartSlice'
+import { addToCart, saveCart } from '../redux/features/cartSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function ProductCard({ product }) {
     const dispatch = useDispatch()
     const { userInfo } = useSelector((state) => state.auth)
+    const { items, total } = useSelector((state) => state.cart)
     const navigate = useNavigate()
 
     const addPanier = () => {
         if (userInfo) {
             dispatch(addToCart(product))
+            dispatch(saveCart({ product_id: items[0].id, quantity: total }))
         } else {
             navigate('/login')
         }

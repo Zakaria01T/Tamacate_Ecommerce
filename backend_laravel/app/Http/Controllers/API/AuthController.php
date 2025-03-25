@@ -30,7 +30,12 @@ class AuthController extends Controller
                 $token = $user->createToken('auth-token')->plainTextToken;
 
                 return response()->json([
-                    'token' => $token . '/' . $user->user_role,
+                    'user' => [
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'isAdmin' => $user->user_role
+                    ],
+                    'token' => $token
                 ], 200);
             } else {
                 return response()->json(['message' => 'Email or Password is invalid'], 401);

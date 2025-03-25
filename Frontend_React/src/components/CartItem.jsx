@@ -9,7 +9,7 @@ export default function CartItem({ item, onRemove }) {
     const handleQuantityChange = (newQuantity) => {
         const qty = Math.max(1, Math.min(99, newQuantity))
         setQuantity(qty)
-        dispatch(updateCartItemQuantity({ id: item._id, quantity: qty }))
+        dispatch(updateCartItemQuantity({ id: item.id, quantity: qty }))
     }
 
     return (

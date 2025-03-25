@@ -7,12 +7,22 @@ export const fetchProducts = createAsyncThunk('products/fetchAll', async () => {
 })
 
 export const createProduct = createAsyncThunk('products/create', async (productData) => {
-  const { data } = await API.post('/products', productData)
+  const { data } = await API.post('/products', productData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  })
   return data
 })
 
 export const updateProduct = createAsyncThunk('products/update', async ({ id, productData }) => {
-  const { data } = await API.put(`/products/${id}`, productData)
+  const { data } = await API.put(`/products/${id}`, productData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      }
+    }
+  )
   return data
 })
 

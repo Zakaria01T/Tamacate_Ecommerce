@@ -43,8 +43,7 @@ class PanierController extends Controller
                 [
                     'user_id' => Auth::id(),
                     'product_id' => $request->product_id,
-
-                'quantity' => $request->quantity
+                    'quantity' => $request->quantity
                 ]
             );
 

@@ -164,7 +164,7 @@ export default function ProductForm() {
                             required
                         >
                             <option value="">Select a category</option>
-                            {categories.map(category => (
+                            {categories.length > 0 && categories.map(category => (
                                 <option key={category.id} value={category.id}>{category.name}</option>
                             ))}
                         </select>

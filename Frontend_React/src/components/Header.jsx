@@ -30,9 +30,14 @@ export default function Header() {
                     {userInfo ? (
                         <div className="flex items-center gap-4">
                             {userInfo?.isAdmin === 1 && (
-                                <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
-                                    Dashboard
-                                </Link>
+                                <>
+                                    <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
+                                        Dashboard
+                                    </Link>
+                                    <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
+                                        Products
+                                    </Link>
+                                </>
                             )}
                             <button
                                 onClick={() => dispatch(logout())}

@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Turnover from '../components/Turnover';
 import Statistics from '../components/Statistics';
 import axios from 'axios';
+import { fetchProducts } from '../redux/features/productSlice';
+import { API } from '../api/api';
+import { useDispatch } from 'react-redux';
 
 const AdminDashboard = () => {
+    const dispatch = useDispatch();
     const [ordersData, setOrdersData] = useState([]);
     const [productsData, setProductsData] = useState([]);
     const [clientsData, setClientsData] = useState([]);
@@ -11,10 +15,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const fetchOrdersData = async () => {
             try {
-                const token = localStorage.getItem('csrf_token');
-                const response = await axios.get('http://127.0.0.1:8000/api/orders', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await API.get('/orders');
                 setOrdersData(response.data.orders || []);
             } catch (error) {
                 console.error('Error fetching orders data:', error);
@@ -23,10 +24,7 @@ const AdminDashboard = () => {
 
         const fetchProductsData = async () => {
             try {
-                const token = localStorage.getItem('csrf_token');
-                const response = await axios.get('http://127.0.0.1:8000/api/products', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await dispatch(fetchProducts());
                 setProductsData(response.data.products || []);
             } catch (error) {
                 console.error('Error fetching products data:', error);
@@ -35,12 +33,8 @@ const AdminDashboard = () => {
 
         const fetchClientsData = async () => {
             try {
-                const token = localStorage.getItem('csrf_token');
-                const response = await axios.get('http://127.0.0.1:8000/api/users', {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
+                const response = await API.get('users');
                 setClientsData(response.data.clients || []);
-                console.log(response.data);
             } catch (error) {
                 console.error('Error fetching clients data:', error);
             }

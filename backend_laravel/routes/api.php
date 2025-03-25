@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AdminOrderController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\ProductController;
@@ -55,8 +56,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('payment_order', [PaymentController::class, 'makeOrder']);
-    Route::get('client_order', [ClientOrderController::class, 'index']);
+    Route::get("/uncomplete_order/{id}", [ClientOrderController::class, 'uncomplete']);
     Route::get('client_order/{id}', [ClientOrderController::class, 'vieworder']);
+    Route::get('client_order', [ClientOrderController::class, 'index']);
+});
+
+
+//admin order
+Route::middleware('auth:sanctum')->controller(AdminOrderController::class)->group(function () {
+    Route::get('admin_order', [AdminOrderController::class, 'index']);
+    Route::get('admin_order/{id}', [AdminOrderController::class, 'vieworder']);
+    Route::put('admin_order_update/{id}', [AdminOrderController::class, 'updateorder']);
+    Route::get('admin_order_history', [AdminOrderController::class, 'historyorder']);
 });
 
 //user
@@ -64,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/updateUser', [UserController::class, 'updateUser']);
     Route::put('/updatePassword', [UserController::class, 'updatePassword']);
     Route::delete('/delete-account', [UserController::class, 'deleteAccount']);
+    Route::get('/users',[UserController::class,'getNotAdmittedUsers']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

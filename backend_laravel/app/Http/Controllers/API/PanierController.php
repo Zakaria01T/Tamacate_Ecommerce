@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 use App\Models\Panier;
@@ -25,24 +26,30 @@ class PanierController extends Controller
     public function store(Request $request)
     {
         try {
-            \Log::info('Incoming request data:', $request->all());
-
-            $request->validate([
+            $validate = Validator::make($request->all(), [
                 'product_id' => 'required|exists:products,id',
                 'quantity' => 'required|integer|min:1',
             ]);
+            // $request->validate([
+            //     'product_id' => 'required|exists:products,id',
+            //     'quantity' => 'required|integer|min:1',
+            // ]);
+            if ($validate->fails()) {
+                return response()->json(['errors' => $validate->errors()], 400);
+            }
 
-            $panier = Panier::updateOrCreate(
+
+            $panier = Panier::create(
                 [
                     'user_id' => Auth::id(),
                     'product_id' => $request->product_id,
-                ],
-                ['quantity' => $request->quantity]
+
+                'quantity' => $request->quantity
+                ]
             );
 
             return response()->json(['message' => 'Product added to panier', 'panier' => $panier], 201);
         } catch (\Exception $e) {
-            \Log::error('Error in store method:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'An error occurred while adding the product to the panier.'], 500);
         }
     }

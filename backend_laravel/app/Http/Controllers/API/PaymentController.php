@@ -21,13 +21,21 @@ class PaymentController extends Controller
     public function makeOrder() {
         $order = new Order();
         $order->user_id = Auth()->user()->id;
+
         $total = 0;
         $carteitems_total = Panier::where('user_id', Auth::id())->get();
+        if($carteitems_total->isEmpty()){
+            return response()->json([
+                'status' => 'Your cart is empty.',
+            ]);
+        }
         foreach ($carteitems_total as $prod) {
-            $total += $prod->product->prix_vent;
+            $total += $prod->product->price * $prod->quantity;
         }
         $order->total_price = $total;
+
         $order->save();
+
 
         $carteitems = Panier::where('user_id', Auth::id())->get();
         foreach ($carteitems as $item) {

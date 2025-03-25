@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->double('total_price');
+            $table->integer('status')->default(0)->comment('0:pending, 1:Confirmed, 2:Cancelled');
+            $table->enum('status_payment', ['paid', 'unpaid'])->default('unpaid');
             $table->timestamps();
         });
     }

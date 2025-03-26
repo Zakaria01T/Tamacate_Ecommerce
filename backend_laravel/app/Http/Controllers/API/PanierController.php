@@ -7,6 +7,7 @@ use App\Models\Panier;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class PanierController extends Controller
 {
@@ -28,32 +29,32 @@ class PanierController extends Controller
     // Add a product to the cart
     public function addToCart(Request $request, $productId)
     {
-        $userId = Auth::id();
-        $product = Product::find($productId);
+        try {
+            $userId = Auth::id();
+            $product = Product::find($productId);
 
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
+            if (!$product) {
+                return response()->json(['error' => 'Product not found'], 404);
+            }
 
-
-            $panier = Panier::create(
-                [
-                    'user_id' => Auth::id(),
-                    'product_id' => $request->product_id,
-
+            $panier = Panier::create([
+                'user_id' => $userId,
+                'product_id' => $productId,
                 'quantity' => $request->quantity
-                ]
-            );
+            ]);
 
-            return response()->json(['message' => 'Product added to panier', 'panier' => $panier], 201);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred while adding the product to the panier.'], 500);
+            return response()->json([
+                'message' => 'Product added to panier',
+                'panier' => $panier
+            ], 201);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while adding the product to the panier.'
+            ], 500);
         }
     }
 
-
-
-    public function update(Request $request, $id)
+    public function update(Request $request, $productId)
     {
         $request->validate([
             'quantity' => 'required|integer|min:1'

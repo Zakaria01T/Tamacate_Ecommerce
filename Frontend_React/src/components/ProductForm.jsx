@@ -3,12 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { API } from '../api/api';
 import { useDispatch } from 'react-redux';
 import { createProduct, updateProduct } from '../redux/features/productSlice';
+import LoadingSpinner from './LoadingSpinner';
 
 export default function ProductForm() {
     const location = useLocation();
+    const initialValues = location.state?.product || null;
     const [isEditing, setIsEditing] = useState(false);
     const [categories, setCategories] = useState([]);
-    const initialValues = location.state?.product || {};
+    const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
@@ -17,12 +19,11 @@ export default function ProductForm() {
         description: '',
         image: null,
         stock: 0,
+        category_id: '',
         ...initialValues
     });
 
-
     useEffect(() => {
-
         if (initialValues?.id) {
             setIsEditing(true);
             setFormData(prev => ({
@@ -32,29 +33,37 @@ export default function ProductForm() {
                 stock: initialValues.stock || 0
             }));
         }
+        fetchCategories();
     }, [initialValues]);
 
-    const fetchCategories = () => {
+    const fetchCategories = async () => {
         try {
-            const data = API.get('/categories')
+            const response = await API.get('/categories');
+            setCategories(response.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        } finally {
+            setIsLoading(false);
         }
-        catch { }
-    }
+    };
 
     const handleChange = async (e) => {
         const { name, value, files } = e.target;
         if (name === 'image') {
-            // Convert the image file to a Base64 string
             const file = files[0];
             if (file) {
-                const base64 = await convertToBase64(file);
-                setFormData(prev => ({
-                    ...prev,
-                    [name]: "data:image/png;base64," + base64 // Store the Base64 string
-                }));
+                try {
+                    const base64 = await convertToBase64(file);
+                    setFormData(prev => ({
+                        ...prev,
+                        [name]: "data:image/png;base64," + base64
+                    }));
+                } catch (error) {
+                    console.error('Error converting image to Base64:', error);
+                    alert('Failed to process the image. Please try again.');
+                }
             }
         } else {
-            // Handle other inputs
             setFormData(prev => ({
                 ...prev,
                 [name]: name === 'price' || name === 'stock' ? Number(value) : value
@@ -62,12 +71,11 @@ export default function ProductForm() {
         }
     };
 
-    // Helper function to convert a file to Base64
     const convertToBase64 = (file) => {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]); // Extract Base64 data
+            reader.onload = () => resolve(reader.result.split(',')[1]);
             reader.onerror = (error) => reject(error);
         });
     };
@@ -76,15 +84,20 @@ export default function ProductForm() {
         e.preventDefault();
 
         try {
-            const endpoint = isEditing ? `/products/${initialValues.id}` : '/products';
-            const method = isEditing ? 'put' : 'post';
 
-            const response = await API[method](endpoint, formData);
+            const formDataToSend = new FormData();
+            formDataToSend.append('name', formData.name);
+            formDataToSend.append('price', formData.price);
+            formDataToSend.append('description', formData.description);
+            formDataToSend.append('stock', formData.stock);
+            formDataToSend.append('category_id', formData.category_id);
+            formDataToSend.append('image', formData.image);
+
 
             if (isEditing) {
-                dispatch(updateProduct(response.data));
+                dispatch(updateProduct({ id: initialValues.id, productData: formDataToSend }));
             } else {
-                dispatch(createProduct(response.data));
+                dispatch(createProduct(formDataToSend));
             }
 
             alert(`Product ${isEditing ? 'updated' : 'created'} successfully!`);
@@ -100,7 +113,7 @@ export default function ProductForm() {
             <div className="grid gap-4">
                 {/* Champ Nom */}
                 <div>
-                    <label className="block mb-2 font-medium">Nom du produit</label>
+                    <label className="block mb-2 font-medium">Name</label>
                     <input
                         type="text"
                         name="name"
@@ -113,7 +126,7 @@ export default function ProductForm() {
 
                 {/* Champ Prix */}
                 <div>
-                    <label className="block mb-2 font-medium">Prix (€)</label>
+                    <label className="block mb-2 font-medium">Price (MAD)</label>
                     <input
                         type="number"
                         name="price"
@@ -137,8 +150,25 @@ export default function ProductForm() {
                     />
                 </div>
 
+                {/* Champ Categories */}
                 <div>
                     <label className="block mb-2 font-medium">Category</label>
+                    {isLoading ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <select
+                            name="category_id"
+                            value={formData.category_id}
+                            onChange={handleChange}
+                            className="w-full p-2 border rounded"
+                            required
+                        >
+                            <option value="">Select a category</option>
+                            {categories.length > 0 && categories.map(category => (
+                                <option key={category.id} value={category.id}>{category.name}</option>
+                            ))}
+                        </select>
+                    )}
                 </div>
 
                 {/* Champ Image */}
@@ -150,19 +180,18 @@ export default function ProductForm() {
                         accept="image/*"
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
-                        required={!isEditing} // Only required for new products
+                        required={!isEditing}
                     />
                 </div>
 
                 {/* Afficher l'image */}
-                {formData.image && (
+                {formData.image && typeof formData.image === 'string' && (
                     <img
                         src={formData.image}
                         alt="Product"
                         className="w-32 h-32 object-cover rounded-lg"
                     />
                 )}
-
 
                 {/* Champ Stock */}
                 <div>

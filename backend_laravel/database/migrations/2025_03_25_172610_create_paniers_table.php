@@ -10,9 +10,7 @@ class CreatePaniersTable extends Migration
     {
         Schema::create('paniers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Fixed foreign key
-            $table->integer('quantity');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Each user has one cart
             $table->timestamps();
         });
     }

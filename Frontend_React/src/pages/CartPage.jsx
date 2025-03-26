@@ -22,7 +22,7 @@ export default function CartPage() {
                 <div className="grid gap-4">
                     {items.map(item => (
                         <CartItem
-                            key={item._id}
+                            key={item.id}
                             item={item}
                             onRemove={() => dispatch(removeFromCart(item._id))}
                         />

@@ -11,6 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 import ProductForm from './components/ProductForm';
 import Layout from './components/Layout';
 import NotFoundPage from './pages/NotFoundPage';
+import ProductsPage from './pages/ProductsPage';
 
 function App() {
   return (
@@ -30,8 +31,9 @@ function App() {
           </Route>
 
           {/* Routes admin */}
-          <Route element={<ProtectedRoute adminOnly={false} />}>
+          <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/products" element={<ProductsPage />} />
             <Route path="/admin/product" element={<ProductForm />} />
           </Route>
 

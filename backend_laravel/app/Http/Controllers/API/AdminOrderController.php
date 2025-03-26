@@ -17,8 +17,7 @@ class AdminOrderController extends Controller
             ->get();
         return response()->json($orders);
     }
-    public function vieworder($id)
-    {
+    public function vieworder($id){
         $orders = Order::where('id', $id)->first();
         return response()->json($orders);
     }
@@ -41,11 +40,9 @@ class AdminOrderController extends Controller
             ->get();
         return response()->json($orders);
     }
-    public function pdf($id)
+    public function historyorderdetails($id)
     {
-        $orderproducts = OrderItem::where('order_id', $id)->get();
-        return response()->json([
-            "orderproducts" => $orderproducts
-        ]);
+        $orderItems = OrderItem::where('order_id', $id)->with('product')->get();
+        return response()->json($orderItems);
     }
 }

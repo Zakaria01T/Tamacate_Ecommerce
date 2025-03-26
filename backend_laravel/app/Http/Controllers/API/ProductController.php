@@ -79,8 +79,6 @@ class ProductController extends Controller
             return response()->json(['errors' => $validate->errors()], 400);
         }
 
-
-
         $product->update([
             'name' => $request->name,
             'description' => $request->description,

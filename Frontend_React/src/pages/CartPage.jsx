@@ -2,6 +2,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { removeFromCart, clearCart } from '../redux/features/cartSlice'
 import CartItem from '../components/CartItem'
 import { Link } from 'react-router-dom'
+import { HiShoppingCart } from 'react-icons/hi'
 
 export default function CartPage() {
     const { items, total } = useSelector((state) => state.cart)
@@ -9,13 +10,13 @@ export default function CartPage() {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Votre Panier</h1>
 
             {items.length === 0 ? (
-                <div className="text-center">
-                    <p className="text-gray-600 mb-4">Votre panier est vide</p>
-                    <Link to="/" className="text-blue-600 hover:underline">
-                        Continuer vos achats
+                <div className="flex flex-col items-center gap-4">
+                    <HiShoppingCart className='text-9xl text-gray-400' />
+                    <p className="text-gray-600 mb-4">Your cart s empty</p>
+                    <Link to="/" className="bg-blue-600  hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        Explore items
                     </Link>
                 </div>
             ) : (

@@ -15,7 +15,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchOrdersData = async () => {
       try {
-        const response = await API.get('/orders');
+        const response = await API.get('/admin_order');
         setOrdersData(response.data.orders || []);
       } catch (error) {
         console.error('Error fetching orders data:', error);
@@ -25,8 +25,7 @@ const AdminDashboard = () => {
     const fetchProductsData = async () => {
       try {
         const response = await dispatch(fetchProducts());
-        console.log(response.data)
-        setProductsData(response.data.products || []);
+        setProductsData(response.payload || []);
       } catch (error) {
         console.error('Error fetching products data:', error);
       }
@@ -54,7 +53,7 @@ const AdminDashboard = () => {
           productsData={productsData}
           clientsData={clientsData}
         />
-        <Turnover salesData={clientsData} />
+        <Turnover salesData={productsData} />
       </div>
     </div>
   );

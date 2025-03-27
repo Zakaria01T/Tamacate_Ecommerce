@@ -132,7 +132,7 @@ export default function ProductForm() {
                         name="price"
                         step="0.1"
                         min="0"
-                        value={formData.price}
+                        value={formData.price || ""}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
                         required
@@ -200,7 +200,7 @@ export default function ProductForm() {
                         type="number"
                         name="stock"
                         min="0"
-                        value={formData.stock}
+                        value={formData.stock || ""}
                         onChange={handleChange}
                         className="w-full p-2 border rounded"
                     />

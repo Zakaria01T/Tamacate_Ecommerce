@@ -25,21 +25,21 @@ class PanierController extends Controller
     }
 
     // Add a product to the cart
-    public function addToCart(Request $request, $productId)
+    public function addToCart(Request $request)
     {
         try {
+            $request->validate([
+                'product_id' => 'required|integer|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+            ]);
+
             $userId = Auth::id();
-            $product = Product::find($productId);
+            $productId = $request->input('product_id');
 
-            if (!$product) {
-                return response()->json(['error' => 'Product not found'], 404);
-            }
-
-            // Retrieve or create the user's cart
             $panier = Panier::firstOrCreate(['user_id' => $userId]);
 
             // Attach product to cart (assuming many-to-many relation)
-            $panier->products()->attach($productId, ['quantity' => $request->quantity]);
+            $panier->products()->attach($productId, ['quantity' => $request->input('quantity')]);
 
             return response()->json(['message' => 'Product added to cart', 'panier' => $panier->load('products')], 201);
         } catch (Exception $e) {

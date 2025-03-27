@@ -25,6 +25,7 @@ const AdminDashboard = () => {
     const fetchProductsData = async () => {
       try {
         const response = await dispatch(fetchProducts());
+        console.log(response.data)
         setProductsData(response.data.products || []);
       } catch (error) {
         console.error('Error fetching products data:', error);
@@ -34,7 +35,6 @@ const AdminDashboard = () => {
     const fetchClientsData = async () => {
       try {
         const response = await API.get('users');
-        console.log(response.data.users);
         setClientsData(response.data.users || []);
       } catch (error) {
         console.error('Error fetching clients data:', error);

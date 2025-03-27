@@ -11,19 +11,17 @@ use Exception;
 
 class PanierController extends Controller
 {
-    // Get the user's cart
+    // Retrieve the user's cart
     public function index()
     {
         $userId = Auth::id();
-        $panier = Panier::where('user_id', $userId)->first();
+        $panier = Panier::where('user_id', $userId)->with('products')->first();
 
         if (!$panier) {
             return response()->json(['error' => 'Cart not found'], 404);
         }
 
-        return response()->json([
-            'panier' => $panier->load('products')
-        ]);
+        return response()->json(['panier' => $panier]);
     }
 
     // Add a product to the cart
@@ -37,23 +35,19 @@ class PanierController extends Controller
                 return response()->json(['error' => 'Product not found'], 404);
             }
 
-            $panier = Panier::create([
-                'user_id' => $userId,
-                'product_id' => $productId,
-                'quantity' => $request->quantity
-            ]);
+            // Retrieve or create the user's cart
+            $panier = Panier::firstOrCreate(['user_id' => $userId]);
 
-            return response()->json([
-                'message' => 'Product added to panier',
-                'panier' => $panier
-            ], 201);
+            // Attach product to cart (assuming many-to-many relation)
+            $panier->products()->attach($productId, ['quantity' => $request->quantity]);
+
+            return response()->json(['message' => 'Product added to cart', 'panier' => $panier->load('products')], 201);
         } catch (Exception $e) {
-            return response()->json([
-                'message' => 'An error occurred while adding the product to the panier.'
-            ], 500);
+            return response()->json(['error' => 'An error occurred while adding the product to the cart.'], 500);
         }
     }
 
+    // Update product quantity in the cart
     public function update(Request $request, $productId)
     {
         $request->validate([
@@ -67,15 +61,11 @@ class PanierController extends Controller
             return response()->json(['error' => 'Cart not found'], 404);
         }
 
-        $product = $panier->products()->where('product_id', $productId)->first();
-
-        if (!$product) {
+        if (!$panier->products()->where('product_id', $productId)->exists()) {
             return response()->json(['error' => 'Product not in cart'], 404);
         }
 
-        $panier->products()->updateExistingPivot($productId, [
-            'quantity' => $request->quantity
-        ]);
+        $panier->products()->updateExistingPivot($productId, ['quantity' => $request->quantity]);
 
         return response()->json(['message' => 'Cart updated']);
     }
@@ -88,6 +78,10 @@ class PanierController extends Controller
 
         if (!$panier) {
             return response()->json(['error' => 'Cart not found'], 404);
+        }
+
+        if (!$panier->products()->where('product_id', $productId)->exists()) {
+            return response()->json(['error' => 'Product not in cart'], 404);
         }
 
         $panier->products()->detach($productId);

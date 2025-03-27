@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchProducts, deleteProduct } from '../redux/features/productSlice';
-import { HiPlus, HiPencil, HiTrash } from 'react-icons/hi';
+import { HiPlus, HiPencil, HiTrash, HiX } from 'react-icons/hi';
 import DataTable from 'react-data-table-component';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { API } from '../api/api';
@@ -76,16 +76,16 @@ const ProductsPage = () => {
             <div className="flex justify-between items-center mb-4">
                 <input
                     type="text"
-                    placeholder="Search by name, price, stock or category"
+                    placeholder="Search products"
                     value={filterText}
                     onChange={e => setFilterText(e.target.value)}
                     className="border p-2 rounded w-full max-w-md"
                 />
                 <button
                     onClick={handleClear}
-                    className="ml-2 bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded"
+                    className="ml-2 bg-gray-200 hover:bg-gray-300  p-2 rounded"
                 >
-                    Clear
+                    <HiX />
                 </button>
             </div>
         );
@@ -166,10 +166,10 @@ const ProductsPage = () => {
     return (
         <div className="container mx-auto p-4">
             <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">Dashboard</h1>
+                <h1 className="text-3xl font-bold">Products</h1>
                 <Link
                     to="/admin/product"
-                    className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-1"
+                    className="bg-green-600 hover:bg-green-400 text-white px-4 py-2 rounded-lg flex items-center gap-1"
                 >
                     <HiPlus className='text-xl' />
                     <span>Add Product</span>

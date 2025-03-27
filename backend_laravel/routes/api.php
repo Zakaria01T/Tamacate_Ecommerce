@@ -48,7 +48,7 @@ Route::delete('/categories/{id}', [CategoryController::class, 'delete']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/paniers', [PanierController::class, 'index']);
     Route::post('/paniers', [PanierController::class, 'addToCart']);
-    Route::put('/paniers/{productId}', [PanierController::class, 'updateCart']);
+    Route::put('/paniers/{productId}', [PanierController::class, 'update']);
     Route::delete('/paniers/{productId}', [PanierController::class, 'removeFromCart']);
     Route::delete('/paniers', [PanierController::class, 'clearCart']);
 });

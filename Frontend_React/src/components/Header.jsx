@@ -37,6 +37,9 @@ export default function Header() {
                                     <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
                                         Products
                                     </Link>
+                                    <Link to="/admin/orders" className="text-gray-600 hover:text-blue-600">
+                                        Orders
+                                    </Link>
                                 </>
                             )}
                             <button

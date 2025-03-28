@@ -11,7 +11,7 @@ export default function ProductCard({ product }) {
     const addPanier = () => {
         if (userInfo) {
             dispatch(addToCart(product))
-            dispatch(saveCart({ product_id: items[0].id, quantity: total }))
+            dispatch(saveCart({ product_id: product.id, quantity: 1 }))
         } else {
             navigate('/login')
         }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->double('total_price');
             $table->integer('status')->default(0)->comment('0:pending, 1:Confirmed, 2:Cancelled');
             $table->enum('status_payment', ['paid', 'unpaid'])->default('unpaid');
+            $table->enum('payment_method', ['cash', 'paypal'])->default('cash');
             $table->timestamps();
         });
     }

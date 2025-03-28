@@ -16,7 +16,7 @@ export default function ProductCard({ product }) {
             navigate('/login')
         }
     }
-};
+
 return (
     <div className="border p-4 rounded-lg shadow-lg">
         <img src={`http://localhost:8000/images/products/${product.image}`} alt={product.name} className="h-48 w-full object-cover" />
@@ -30,4 +30,5 @@ return (
         </button>
     </div>
 );
-}
+
+};

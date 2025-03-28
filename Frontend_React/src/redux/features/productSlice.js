@@ -16,15 +16,24 @@ export const createProduct = createAsyncThunk('products/create', async (productD
 });
 
 export const updateProduct = createAsyncThunk('products/update', async ({ id, productData }) => {
-  const { data } = await API.put(
+  const formData = new FormData();
+
+  Object.keys(productData).forEach((key) => {
+    formData.append(key, productData[key]);
+  });
+  console.log(productData);
+  formData.append('_method', 'PUT'); // Laravel method spoofing
+
+  const { data } = await API.post(
     `/products/${id}`,
-    productData,
+    formData,
     {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     },
   );
+
   return data;
 });
 

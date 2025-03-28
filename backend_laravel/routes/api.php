@@ -53,13 +53,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/paniers', [PanierController::class, 'clearCart']);
 });
 
-// order
+// payment : cash or  paypal
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('payment_order', [PaymentController::class, 'makeOrder']);
+    Route::get('payment_paypal', [PaymentController::class, 'payment']);
+    Route::get('payment_success', [PaymentController::class, 'success'])->name("payment_success");
+    Route::get('payment_cancel', [PaymentController::class, 'cancel'])->name("payment_cancel");
+
+});
+
+//client Order
+Route::middleware('auth:sanctum')->group(function () {
     Route::get("/uncomplete_order/{id}", [ClientOrderController::class, 'uncomplete']);
     Route::get('client_order/{id}', [ClientOrderController::class, 'vieworder']);
     Route::get('client_order', [ClientOrderController::class, 'index']);
 });
+
+
 
 //admin order
 Route::middleware('auth:sanctum')->controller(AdminOrderController::class)->group(function () {

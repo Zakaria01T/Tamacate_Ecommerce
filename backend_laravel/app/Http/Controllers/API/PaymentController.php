@@ -20,12 +20,24 @@ class PaymentController extends Controller
 
     //fonction pour un ordre qui a une payment (payer jusque la commande arrive à la maison)
     public function makeOrder() {
-        $carteitems = Panier::where('user_id', Auth::id())->get();
+        $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
+
+        if (!$pannier) {
+            return response()->json([
+                'status' => 'Your cart is empty.',
+            ], 400);
+        }
+        //return response()->json($carteitems);
+        //dd($pannier->products->toArray()); // Cela affichera les produits du premier panier trouvé
+        // dd($pannier);
+        $pannieritems = $pannier->products->toArray();
         $flag = false;
         $NameproductOutOfStock = [];
-        foreach($carteitems as $item){
-            $prod = Product::find($item->product_id);
-            if ($prod->stock < $item->quantity) {
+        // dd($pannieritems);
+        foreach($pannieritems as $item){
+            // dd($item);
+            $prod = Product::find($item['id']);
+            if ($prod->stock < $item["pivot"]["quantity"]) {
                 $flag = true;
                 array_push($NameproductOutOfStock, $prod->name);
             }
@@ -43,33 +55,28 @@ class PaymentController extends Controller
 
         $total = 0;
 
-        if($carteitems->isEmpty()){
-            return response()->json([
-                'status' => 'Your cart is empty.',
-            ], 400);
-        }
-
-        foreach ($carteitems as $prod) {
-            $total += $prod->product->price * $prod->quantity;
+        foreach ($pannieritems as $prod) {
+            $total += $prod['price'] * $prod['pivot']['quantity'];
         }
         $order->total_price = $total;
-
         $order->save();
+        
 
-
-        foreach ($carteitems as $item) {
-            $prod = Product::find($item->product_id);
-            $prod->stock -= $item->quantity;
+        foreach ($pannieritems as $item) {
+            $prod = Product::find($item['id']);
+            $prod->stock -= $item['pivot']['quantity'];
             $prod->save();
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity,
+                'product_id' => $item['id'],
+                'quantity' => $item['pivot']['quantity'],
             ]);
         }
 
-        Panier::destroy($carteitems);
-        return response()->json([
+        $pannier->products()->detach(); // Remove all related products from panier_product table
+        $pannier->delete(); // Delete the panier
+
+        return response()->json(data: [
             'status' => 'Your order was added successfully.',
         ]);
     }

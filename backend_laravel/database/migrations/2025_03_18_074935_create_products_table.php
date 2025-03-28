@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description');
-            $table->binary('image');
+            $table->string('image')->nullable()->default("default.jpg");
             $table->decimal('price', 8, 2);
             $table->bigInteger('category_id');
             $table->integer('stock')->default(0);

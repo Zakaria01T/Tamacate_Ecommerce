@@ -23,7 +23,7 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'required|string',
+            'image' => 'required|image|mimes:png,jpg,svg,jpeg',
             'price' => 'required|numeric',
             'category_id' => 'required',
             'stock' => 'required|numeric',
@@ -32,12 +32,21 @@ class ProductController extends Controller
         if ($validate->fails()) {
             return response()->json(['errors' => $validate->errors()], 400);
         }
+        //to save the image
+        $filename = 'default.jpg';
 
+        if ($request->hasfile('image')) {
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension(); // Récupérer l'extension de l'image
+            $filename = time() .'.' . $extension; // Générer un nom unique
+            $path = 'images/products';
+            $file->move(public_path($path), $filename); // Déplacer l'image
+        }
 
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
+            'image' => $filename,
             'price' => $request->price,
             'category_id' => $request->category_id,
             'stock' => $request->stock,
@@ -69,8 +78,8 @@ class ProductController extends Controller
         $validate = Validator::make($request->all(), [
             'name' => 'required|string|max:70',
             'description' => 'required|string',
-            'image' => 'sometimes|string',
             'price' => 'required|numeric',
+            'image' => 'image|mimes:png,jpg,svg,jpeg',
             'category_id' => 'required',
             'stock' => 'required|numeric',
         ]);
@@ -79,10 +88,19 @@ class ProductController extends Controller
             return response()->json(['errors' => $validate->errors()], 400);
         }
 
+        $product = Product::find($id);
+        $filename = $product->image;
+        if ($request->hasfile('image')) {
+            $file = $request->file('image');
+            $extension = $file->getClientOriginalExtension(); // Récupérer l'extension de l'image
+            $filename = time() . '.' . $extension; // Générer un nom unique
+            $path = 'images/products';
+            $file->move(public_path($path), $filename); // Déplacer l'image
+        }
         $product->update([
             'name' => $request->name,
             'description' => $request->description,
-            'image' => $request->image,
+            'image' => $filename,
             'price' => $request->price,
             'category_id' => $request->category_id,
             'stock' => $request->stock,

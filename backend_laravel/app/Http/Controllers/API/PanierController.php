@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Panier;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -20,8 +21,13 @@ class PanierController extends Controller
         if (!$panier) {
             return response()->json(['error' => 'Cart not found'], 404);
         }
+        $products = $panier->products;
 
-        return response()->json(['panier' => $panier]);
+        return response()->json(['data' => $products->map(function ($product) {
+            return array_merge((new ProductResource($product))->toArray(request()), [
+                'total' => $product->pivot->quantity * $product->price,
+            ]);
+        })]);
     }
 
     // Add a product to the cart

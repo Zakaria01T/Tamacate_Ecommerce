@@ -18,6 +18,13 @@ export const saveCart = createAsyncThunk(
         return response.data;
     }
 );
+export const updateCart = createAsyncThunk(
+    'cart/updateCart',
+    async ({ product_id, quantity }) => {
+        const response = await API.post(`/paniers/${product_id}`, { quantity });
+        return response.data;
+    }
+);
 
 export const removeCart = createAsyncThunk(
     'cart/removeCart',
@@ -71,7 +78,7 @@ const cartSlice = createSlice({
             })
             .addCase(fetchCart.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.items = action.payload.items;
+                state.items = action.payload.data;
                 state.total = action.payload.total;
             })
             .addCase(fetchCart.rejected, (state, action) => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { removeFromCart, updateCartItemQuantity } from '../redux/features/cartSlice';
+import { updateCartItemQuantity } from '../redux/features/cartSlice';
 
 export default function CartItem({ item, onRemove }) {
   const dispatch = useDispatch();
@@ -10,6 +10,7 @@ export default function CartItem({ item, onRemove }) {
     const qty = Math.max(1, Math.min(99, newQuantity));
     setQuantity(qty);
     dispatch(updateCartItemQuantity({ id: item.id, quantity: qty }));
+    dispatch(updateCart({ product_id: item.id, quantity: qty }));
   };
 
   return (

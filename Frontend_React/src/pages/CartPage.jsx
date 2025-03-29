@@ -1,17 +1,22 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { removeFromCart, clearCart } from '../redux/features/cartSlice'
+import { removeFromCart, clearCart, fetchCart } from '../redux/features/cartSlice'
 import CartItem from '../components/CartItem'
 import { Link } from 'react-router-dom'
 import { HiShoppingCart } from 'react-icons/hi'
+import { useEffect } from 'react'
 
 export default function CartPage() {
     const { items, total } = useSelector((state) => state.cart)
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        dispatch(fetchCart())
+    }, [dispatch])
+
     return (
         <div className="container mx-auto p-4">
 
-            {items.length === 0 ? (
+            {items?.length === 0 ? (
                 <div className="flex flex-col items-center gap-4">
                     <HiShoppingCart className='text-9xl text-gray-400' />
                     <p className="text-gray-600 mb-4">Your cart s empty</p>

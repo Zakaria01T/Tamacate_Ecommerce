@@ -70,22 +70,13 @@ export default function ProductForm() {
     e.preventDefault();
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name);
-      formDataToSend.append('price', formData.price);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('stock', formData.stock);
-      formDataToSend.append('category_id', formData.category_id);
-
-      // Append image only if a new file is selected
-      if (formData.image instanceof File) {
-        formDataToSend.append('image', formData.image);
+      if (!(formData.image instanceof File)) {
+        delete formData.image;
       }
-
       if (isEditing) {
-        dispatch(updateProduct({ id: initialValues.id, productData: formDataToSend }));
+        dispatch(updateProduct({ id: initialValues.id, productData: formData }));
       } else {
-        dispatch(createProduct(formDataToSend));
+        dispatch(createProduct(formData));
       }
 
       alert(`Product ${isEditing ? 'updated' : 'created'} successfully!`);
@@ -95,7 +86,6 @@ export default function ProductForm() {
       alert('Failed to save product. Please try again.');
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="container mx-auto space-y-6 overflow-y-scroll h-screen hide-scrollbar p-4">
       <div className="grid gap-4">

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 
 class PaymentController extends Controller
@@ -16,8 +17,130 @@ class PaymentController extends Controller
 
     //functions to make an order that has a payment METHODE (PAYPAL)
     //.............................................................................
+    public function payment(){
+        $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
+        if (!$pannier) {
+            return response()->json([
+                'status' => 'Your cart is empty.',
+            ], 400);
+        }
+        $pannieritems = $pannier->products->toArray();
+        $flag = false;
+        $NameproductOutOfStock = [];
+        // dd($pannieritems);
+        foreach ($pannieritems as $item) {
+            // dd($item);
+            $prod = Product::find($item['id']);
+            if ($prod->stock < $item["pivot"]["quantity"]) {
+                $flag = true;
+                array_push($NameproductOutOfStock, $prod->name);
+            }
+        }
+
+        if ($flag) {
+            return response()->json([
+                'status' => 'The following products are out of stock.',
+                'products' => $NameproductOutOfStock,
+            ], 400);
+        }
 
 
+        $total = 0;
+
+        foreach ($pannieritems as $prod) {
+            $total += $prod['price'] * $prod['pivot']['quantity'];
+        }
+
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config("paypal"));
+        $paypalToken = $provider->getAccessToken();
+        $response =  $provider->createOrder([
+             "intent"=> "CAPTURE",
+            "application_context"=> [
+                "return_url"=> route('payment_success'),
+                "cancel_url"=> route('payment_cancel'),
+            ],
+            "purchase_units"=> [
+                [
+                    "amount"=>[
+                        "currency_code"=> "USD",
+                        "value"=> $total,
+
+                    ]
+                ]
+            ]
+        ]);
+        // dd($response);
+        if (isset($response['id']) && $response['id'] != null) {
+            foreach ($response["links"] as $link) {
+                if ($link["rel"] === 'approve') {
+                    return response()->json([
+                        "status" => "success",
+                        "payment_id" => $response["id"],
+                        "approval_url" => $link['href'],
+                    ]);
+                }
+            }
+        }
+
+        return response()->json([
+            "status" => "error",
+            "message" => "unable to initiate payment",
+        ], 500);
+    }
+
+    public function success(Request $request)
+    {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config("paypal"));
+        $paypalToken = $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder($request->token);
+        if (isset($response["status"]) && $response["status"] == "COMPLETED") {
+
+            $order = new Order();
+            $order->user_id = Auth()->user()->id;
+            $total = 0;
+            $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
+            $pannieritems = $pannier->products->toArray();
+            foreach ($pannieritems as $prod) {
+                $total += $prod['price'] * $prod['pivot']['quantity'];
+            }
+            $order->total_price = $total;
+            $order->status = "completed";
+            $order->status_payment = "paid";
+            $order->payment_method="paypal";
+            $order->save();
+            foreach ($pannieritems as $item) {
+                $prod = Product::find($item['id']);
+                $prod->stock -= $item['pivot']['quantity'];
+                $prod->save();
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['id'],
+                    'quantity' => $item['pivot']['quantity'],
+                ]);
+            }
+            $pannier->products()->detach(); // Remove all related products from panier_product table
+            $pannier->delete(); // Delete the panier
+            return response()->json([
+                "status" => "success",
+                "message" =>"Payment successful.",
+                "transaction_details" => $response,
+            ]);
+        }
+
+        return response()->json([
+            "status" => "error",
+            "message" => "The payment could not be completed.",
+        ], 500);
+    }
+    public function cancel()
+    {
+        return response()->json([
+            "status" => "cancelled",
+            "message" => "The payment was canceled by the user.",
+        ]);
+    }
     //fonction pour un ordre qui a une payment (payer jusque la commande arrive à la maison)
     public function makeOrder() {
         $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
@@ -60,7 +183,7 @@ class PaymentController extends Controller
         }
         $order->total_price = $total;
         $order->save();
-        
+
 
         foreach ($pannieritems as $item) {
             $prod = Product::find($item['id']);

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { addToCart } from '../redux/features/cartSlice'
 import { API } from '../api/api'
+import { saveCart } from '../redux/features/cartSlice'
 
 export default function ProductPage() {
     const { id } = useParams()
@@ -13,7 +13,7 @@ export default function ProductPage() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const { data } = await API.get(`/api/products/${id}`)
+                const { data } = await API.get(`/products/${id}`)
                 setProduct(data)
             } catch (error) {
                 console.error(error)
@@ -41,7 +41,7 @@ export default function ProductPage() {
                     <p className="text-gray-600">{product.description}</p>
 
                     <button
-                        onClick={() => dispatch(addToCart(product))}
+                        onClick={() => dispatch(saveCart({ product_id: product.id, quantity: 1 }))}
                         className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
                     >
                         Ajouter au Panier

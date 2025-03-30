@@ -14,7 +14,7 @@ class ClientOrderController extends Controller
     public function index()
     {
         $orders = Order::where('user_id', Auth::id())->get();
-        return response()->json($orders);
+        return response()->json(['data' => $orders]);
     }
 
     public function vieworder($id)
@@ -28,10 +28,10 @@ class ClientOrderController extends Controller
     {
         $order = Order::where('id', $id)->with("orderitems")->first();
         if ($order->payment_status == "paid") {
-            return response()->json(["message" => "the ordre is already paid"],400);
+            return response()->json(["message" => "the ordre is already paid"], 400);
         }
         if ($order->status == "2") {
-            return response()->json(["message" => "the ordre is already Canceled"],400);
+            return response()->json(["message" => "the ordre is already Canceled"], 400);
         }
 
         $orderItems  = OrderItem::where('order_id', $id)->with('product', "order")->get();

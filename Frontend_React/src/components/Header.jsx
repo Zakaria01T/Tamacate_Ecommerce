@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout } from '../redux/features/authSlice'
-import { HiLogout, HiShoppingCart } from 'react-icons/hi'
+import { HiDocumentText, HiLogout, HiShoppingCart } from 'react-icons/hi'
 
 export default function Header() {
     const { userInfo } = useSelector((state) => state.auth)
     const { items } = useSelector((state) => state.cart)
+    const { orders } = useSelector((state => state.orders));
     const dispatch = useDispatch()
 
     return (
@@ -16,16 +17,29 @@ export default function Header() {
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    {!userInfo?.isAdmin && <Link to="/cart" className="flex items-center ">
-                        <div className="relative">
-                            <HiShoppingCart className='text-2xl' />
-                            {items.length > 0 && (
-                                <span className="bg-blue-500 text-white  text-xs px-1 rounded-full absolute -top-2 -right-2">
-                                    {items.length}
-                                </span>
-                            )}
-                        </div>
-                    </Link>}
+                    {!userInfo?.isAdmin &&
+                        <>
+                            <Link to="/cart" className="flex items-center ">
+                                <div className="relative">
+                                    <HiShoppingCart className='text-2xl' />
+                                    {items?.length > 0 && (
+                                        <span className="bg-blue-500 text-white  text-xs px-1 rounded-full absolute -top-2 -right-2">
+                                            {items.length}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                            <Link to="/orders" className="flex items-center ">
+                                <div className="relative">
+                                    <HiDocumentText className='text-2xl' />
+                                    {orders?.length > 0 && (
+                                        <span className="bg-blue-500 text-white  text-xs px-1 rounded-full absolute -top-2 -right-2">
+                                            {orders.length}
+                                        </span>
+                                    )}
+                                </div>
+                            </Link>
+                        </>}
 
                     {userInfo ? (
                         <div className="flex items-center gap-4">

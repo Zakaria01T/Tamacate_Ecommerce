@@ -3,7 +3,7 @@ import DataTable from 'react-data-table-component';
 import { HiX } from 'react-icons/hi';
 import { API } from '../api/api';
 
-function OrdersPage() {
+function OrdersAdminPage() {
     const [orders, setOrders] = useState([]);
     const [filterText, setFilterText] = useState('');
     const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
@@ -106,4 +106,4 @@ function OrdersPage() {
     );
 }
 
-export default OrdersPage;
+export default OrdersAdminPage;

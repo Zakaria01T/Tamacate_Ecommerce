@@ -16,12 +16,12 @@ export default class ErrorBoundary extends Component {
             return (
                 <div className="min-h-screen flex items-center justify-center p-4">
                     <div className="text-center">
-                        <h1 className="text-2xl font-bold mb-4">Une erreur est survenue</h1>
+                        <h1 className="text-2xl font-bold mb-4">An error has occurred</h1>
                         <button
                             onClick={() => window.location.reload()}
                             className="bg-blue-600 text-white px-4 py-2 rounded"
                         >
-                            Recharger la page
+                            Reload the page
                         </button>
                     </div>
                 </div>

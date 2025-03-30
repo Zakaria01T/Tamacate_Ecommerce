@@ -24,9 +24,10 @@ class PanierController extends Controller
         $products = $panier->products;
 
         return response()->json(['data' => $products->map(function ($product) {
-            return array_merge((new ProductResource($product))->toArray(request()), [
-                'total' => $product->pivot->quantity * $product->price,
-            ]);
+            return
+                array_merge((new ProductResource($product))->toArray(request()), [
+                    'quantity' => $product->pivot->quantity,
+                ]);
         })]);
     }
 
@@ -41,13 +42,28 @@ class PanierController extends Controller
 
             $userId = Auth::id();
             $productId = $request->input('product_id');
+            $quantity = $request->input('quantity');
 
             $panier = Panier::firstOrCreate(['user_id' => $userId]);
 
-            // Attach product to cart (assuming many-to-many relation)
-            $panier->products()->attach($productId, ['quantity' => $request->input('quantity')]);
+            // Check if product already exists in the cart
+            if ($panier->products()->where('product_id', $productId)->exists()) {
+                // Update the quantity instead of adding a duplicate
+                $lastQuantity = $panier->products()->where('product_id', $productId)->first()->pivot->quantity;
+                $quantity += $lastQuantity;
+                // Update the quantity of the existing product
+                $panier->products()->updateExistingPivot($productId, ['quantity' => $quantity]);
+            } else {
+                // Attach new product with quantity
+                $panier->products()->attach($productId, ['quantity' => $quantity]);
+            }
 
-            return response()->json(['message' => 'Product added to cart', 'panier' => $panier->load('products')], 201);
+            return response()->json(['data' => $panier->products->map(function ($product) {
+                return
+                    array_merge((new ProductResource($product))->toArray(request()), [
+                        'quantity' => $product->pivot->quantity,
+                    ]);
+            })]);
         } catch (Exception $e) {
             return response()->json(['error' => 'An error occurred while adding the product to the cart.'], 500);
         }
@@ -73,7 +89,12 @@ class PanierController extends Controller
 
         $panier->products()->updateExistingPivot($productId, ['quantity' => $request->quantity]);
 
-        return response()->json(['message' => 'Cart updated']);
+        return response()->json(['data' => $panier->products->map(function ($product) {
+            return
+                array_merge((new ProductResource($product))->toArray(request()), [
+                    'quantity' => $product->pivot->quantity,
+                ]);
+        })]);
     }
 
     // Remove a product from the cart
@@ -92,7 +113,12 @@ class PanierController extends Controller
 
         $panier->products()->detach($productId);
 
-        return response()->json(['message' => 'Product removed from cart']);
+        return response()->json(['data' => $panier->products->map(function ($product) {
+            return
+                array_merge((new ProductResource($product))->toArray(request()), [
+                    'quantity' => $product->pivot->quantity,
+                ]);
+        })]);
     }
 
     // Clear the cart

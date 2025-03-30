@@ -8,11 +8,16 @@ export default function LoginPage() {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { status, error } = useSelector((state) => state.auth);
+  const { status, userInfo, error } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (status === 'succeeded') {
-      navigate('/');
+      if (userInfo.isAdmin) {
+        navigate('/dashboard');
+      }
+      else {
+        navigate('/');
+      }
     }
   }, [status, navigate]);
 

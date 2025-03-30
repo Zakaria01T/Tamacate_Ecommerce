@@ -164,13 +164,13 @@ export default function ProductForm() {
 
         {/* Display Image */}
         {formData.image && (
-        <img
-          src={formData.image instanceof File
-            ? URL.createObjectURL(formData.image)
-            : `http://localhost:8000/images/products/${formData.image}`}
-          alt="Product"
-          className="w-32 h-32 object-cover rounded-lg"
-        />
+          <img
+            src={formData.image instanceof File
+              ? URL.createObjectURL(formData.image)
+              : `http://localhost:8000/storage/${formData.image}`}
+            alt="Product"
+            className="w-32 h-32 object-cover rounded-lg"
+          />
         )}
 
         {/* Stock Field */}

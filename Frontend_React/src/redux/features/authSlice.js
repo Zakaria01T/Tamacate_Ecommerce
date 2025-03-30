@@ -59,7 +59,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.userInfo = action.payload;
+                state.userInfo = action.payload.user;
                 localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
                 localStorage.setItem('csrf_token', action.payload.token);
             })

@@ -21,8 +21,8 @@ export default function RegisterPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        const result = await dispatch(registerUser(formData))
-        if (result.message) navigate('/login')
+        await dispatch(registerUser(formData))
+        if (status === 'succeeded') navigate('/login')
     }
 
     return (

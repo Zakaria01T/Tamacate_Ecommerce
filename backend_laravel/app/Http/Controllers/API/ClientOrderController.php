@@ -13,7 +13,9 @@ class ClientOrderController extends Controller
 {
     public function index()
     {
-        $orders = Order::where('user_id', Auth::id())->get();
+
+        $orders = Order::where('user_id', Auth::id())->with("user")->get();
+
         return response()->json($orders);
     }
 

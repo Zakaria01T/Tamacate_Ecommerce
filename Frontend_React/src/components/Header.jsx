@@ -48,6 +48,9 @@ export default function Header() {
                                     <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                                         Dashboard
                                     </Link>
+                                    <Link to="/admin/Categories" className="text-gray-600 hover:text-blue-600">
+                                        Categories
+                                    </Link>
                                     <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
                                         Products
                                     </Link>

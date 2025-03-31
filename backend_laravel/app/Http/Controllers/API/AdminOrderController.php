@@ -24,8 +24,7 @@ class AdminOrderController extends Controller
     }
     public function vieworder($id)
     {
-        $orderItems = OrderItem::where('order_id', $id)->with('product', 'order')->get();
-
+        $orderItems = OrderItem::where('order_id', $id)->with('product')->get();
         return response()->json($orderItems);
     }
     public function updateorder(Request $request, $id)

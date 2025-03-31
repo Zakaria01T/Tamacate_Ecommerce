@@ -69,7 +69,7 @@ class AuthController extends Controller
             if ($user->save()) {
                 return response()->json(['message' => 'Sign up successful'], 201);
             } else {
-                return response()->json(['error' => 'Sign up failed'], 500);
+                return response()->json(['errors' => 'Sign up failed'], 500);
             }
         } catch (Exception $e) {
             Log::error('Registration error: ' . $e->getMessage());

@@ -2,11 +2,22 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API } from '../../api/api';
 
 // Async thunks
-export const fetchOrders = createAsyncThunk(
-    'orders/fetchOrders',
+export const fetchOrdersByClient = createAsyncThunk(
+    'orders/fetchOrdersByClient',
     async (_, { rejectWithValue }) => {
         try {
             const response = await API.get(`/client_order`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+export const fetchOrdersByAdmin = createAsyncThunk(
+    'orders/fetchOrdersByAdmin',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await API.get(`/admin_order`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -66,15 +77,27 @@ const orderSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Fetch all orders
-            .addCase(fetchOrders.pending, (state) => {
+            // Fetch all orders by client
+            .addCase(fetchOrdersByClient.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchOrders.fulfilled, (state, action) => {
+            .addCase(fetchOrdersByClient.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.orders = action.payload.data;
             })
-            .addCase(fetchOrders.rejected, (state, action) => {
+            .addCase(fetchOrdersByClient.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+            //Fetch all orders by admin
+            .addCase(fetchOrdersByAdmin.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(fetchOrdersByAdmin.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.orders = action.payload.data;
+            })
+            .addCase(fetchOrdersByAdmin.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })

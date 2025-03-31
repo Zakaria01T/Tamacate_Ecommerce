@@ -2,23 +2,26 @@ import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { HiX } from 'react-icons/hi';
 import { API } from '../api/api';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrdersByAdmin } from '../redux/features/orderSlice';
 
-function OrdersAdminPage() {
-    const dispatch = useDispatch()
-    const { orders } = useSelector((state) => state.orders)
+function OrdersPage() {
+    const [orders, setOrders] = useState([]);
     const [filterText, setFilterText] = useState('');
     const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
 
 
     useEffect(() => {
-        dispatch(fetchOrdersByAdmin())
+        // Fetch orders from the API
+        const fetchOrders = async () => {
+            const response = await API.get('/admin_order');
+            setOrders(response.data.orders);
+        }
+
+        fetchOrders();
     }, []);
 
     const filteredItems = orders?.filter(item => {
-        const matchesText = item.user_id == filterText || item.id == filterText ||
-            (item.created_at.includes(filterText))
+        const matchesText = item.user_id.toLowerCase().includes(filterText.toLowerCase()) ||
+            (item.status.toString().includes(filterText))
 
         return matchesText;
     });
@@ -62,27 +65,22 @@ function OrdersAdminPage() {
             sortable: true,
         },
         {
+            name: 'Items',
+            cell: (row) =>
+                row.items.map((item) => (
+                    <div key={item.id}>
+                        {item.name} (x{item.quantity})
+                    </div>
+                )),
+        },
+        {
             name: 'Total Price',
-            selector: (row) => `MAD${row.total_price}`,
+            selector: (row) => `$${row.totalPrice}`,
             sortable: true,
         },
         {
             name: 'Status',
             selector: (row) => row.status,
-            sortable: true,
-        },
-        {
-            name: 'Status Payment',
-            selector: (row) => row.status_payment,
-            sortable: true,
-        },
-        {
-            name: 'Order Date',
-            selector: (row) => new Date(row.created_at).toLocaleDateString('en-GB', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            }),
             sortable: true,
         },
     ];
@@ -108,4 +106,4 @@ function OrdersAdminPage() {
     );
 }
 
-export default OrdersAdminPage;
+export default OrdersPage;

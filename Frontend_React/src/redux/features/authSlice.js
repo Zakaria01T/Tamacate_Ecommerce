@@ -7,7 +7,7 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, {
         const response = await API.post('/auth/register', userData);
         return response.data;
     } catch (err) {
-        return rejectWithValue(err.response.data.message || 'Erreur lors de l\'enregistrement');
+        return rejectWithValue(JSON.stringify(err.response.data.errors) || 'Erreur lors de l\'enregistrement');
     }
 });
 

@@ -10,8 +10,25 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { status, userInfo, error } = useSelector((state) => state.auth);
 
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(loginUser(credentials));
+  };
+
   useEffect(() => {
-    if (status === 'succeeded') {
+    if (error) {
+      import('sweetalert2').then((Swal) => {
+        Swal.default.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: error,
+          confirmButtonColor: 'green',
+        });
+      });
+    }
+    if (userInfo && status === 'succeeded') {
       if (userInfo.isAdmin) {
         navigate('/dashboard');
       }
@@ -19,12 +36,7 @@ export default function LoginPage() {
         navigate('/');
       }
     }
-  }, [status, navigate]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch(loginUser(credentials));
-  };
+  }, [status, error]);
 
   return (
     <div className="container mx-auto p-4 max-w-md">
@@ -52,8 +64,6 @@ export default function LoginPage() {
             required
           />
         </div>
-
-        {error && <p className="text-red-500">{error}</p>}
 
         <button
           type="submit"

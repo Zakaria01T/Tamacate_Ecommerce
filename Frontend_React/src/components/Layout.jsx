@@ -10,7 +10,7 @@ const Layout = () => {
     return (
         <div className="flex flex-col justify-between h-screen overflow-y-scroll hide-scrollbar">
             <Header />
-            <main className='h-fit'>
+            <main className='h-screan flex-grow'>
                 <Outlet />
             </main>
             {userInfo?.isAdmin != 1 && <Footer />}

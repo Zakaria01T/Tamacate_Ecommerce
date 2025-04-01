@@ -14,6 +14,8 @@ import NotFoundPage from './pages/NotFoundPage';
 import ProductsPage from './pages/ProductsPage';
 import OrdersAdminPage from './pages/OrdersAdminPage';
 import OrdersClientPage from './pages/OrdersClientPage';
+import ShowCategories from './pages/ShowCategories';
+import CategoryForm from './components/CategoryForme';
 
 function App() {
   return (
@@ -33,6 +35,14 @@ function App() {
             <Route path="/orders" element={<OrdersClientPage />} />
           </Route>
 
+
+          {/* Routes categories */}
+          <Route element={<ProtectedRoute adminOnly={true} />}>
+            <Route path="/admin/categories" element={<ShowCategories />} />
+            <Route path="/admin/categories/create" element={<CategoryForm />} />
+            <Route path="/admin/categories/edit/:id" element={<CategoryForm />} />
+
+          </Route>
           {/* Routes admin */}
           <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="/dashboard" element={<AdminDashboard />} />

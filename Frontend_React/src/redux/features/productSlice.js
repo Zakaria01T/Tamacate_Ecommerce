@@ -21,7 +21,6 @@ export const updateProduct = createAsyncThunk('products/update', async ({ id, pr
   Object.keys(productData).forEach((key) => {
     formData.append(key, productData[key]);
   });
-  console.log(productData);
   formData.append('_method', 'PUT'); // Laravel method spoofing
 
   const { data } = await API.post(

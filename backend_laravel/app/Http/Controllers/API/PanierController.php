@@ -26,26 +26,33 @@ class PanierController extends Controller
 
     // Add a product to the cart
     public function addToCart(Request $request)
-    {
-        try {
-            $request->validate([
-                'product_id' => 'required|integer|exists:products,id',
-                'quantity' => 'required|integer|min:1',
-            ]);
+{
+    try {
+        $request->validate([
+            'product_id' => 'required|integer|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-            $userId = Auth::id();
-            $productId = $request->input('product_id');
+        $userId = Auth::id();
+        $productId = $request->input('product_id');
+        $quantity = $request->input('quantity');
 
-            $panier = Panier::firstOrCreate(['user_id' => $userId]);
+        $panier = Panier::firstOrCreate(['user_id' => $userId]);
 
-            // Attach product to cart (assuming many-to-many relation)
-            $panier->products()->attach($productId, ['quantity' => $request->input('quantity')]);
-
-            return response()->json(['message' => 'Product added to cart', 'panier' => $panier->load('products')], 201);
-        } catch (Exception $e) {
-            return response()->json(['error' => 'An error occurred while adding the product to the cart.'], 500);
+        // Check if product already exists in the cart
+        if ($panier->products()->where('product_id', $productId)->exists()) {
+            // Update the quantity instead of adding a duplicate
+            $panier->products()->updateExistingPivot($productId, ['quantity' => $quantity]);
+        } else {
+            // Attach new product with quantity
+            $panier->products()->attach($productId, ['quantity' => $quantity]);
         }
+
+        return response()->json(['message' => 'Product added to cart', 'panier' => $panier->load('products')], 201);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'An error occurred while adding the product to the cart.'], 500);
     }
+}
 
     // Update product quantity in the cart
     public function update(Request $request, $productId)

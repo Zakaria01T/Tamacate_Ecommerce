@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->controller(AdminOrderController::class)->grou
 
 //user
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/getUser', [UserController::class, 'getUser']);
     Route::put('/updateUser', [UserController::class, 'updateUser']);
     Route::put('/updatePassword', [UserController::class, 'updatePassword']);
     Route::delete('/delete-account', [UserController::class, 'deleteAccount']);

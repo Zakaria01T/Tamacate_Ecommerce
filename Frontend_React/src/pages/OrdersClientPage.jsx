@@ -17,13 +17,15 @@ function OrdersClientPage() {
         filteredItems()
     };
 
-    const filteredItems = orders.filter((item) => {
-        const matchesText =
-            item.id.toString().includes(filterText) ||
-            item.user_id.toString().includes(filterText) ||
-            item.status.toLowerCase().includes(filterText.toLowerCase());
-        return matchesText;
-    });
+    const filteredItems = () => {
+        orders?.filter((item) => {
+            const matchesText =
+                item.id.toString().includes(filterText) ||
+                item.user_id.toString().includes(filterText) ||
+                item.status.toLowerCase().includes(filterText.toLowerCase());
+            return matchesText;
+        });
+    };
 
 
 
@@ -35,7 +37,7 @@ function OrdersClientPage() {
                 setFilterText={setFilterText}
                 onSearch={handleSearch}
             />
-            {orders.map((order) => {
+            {orders?.map((order) => {
                 <div>
                     <div>
                         <p>{order.status}</p>

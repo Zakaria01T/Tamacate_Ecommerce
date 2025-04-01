@@ -5,11 +5,15 @@ import iso from '../assets/images/iso.png';
 import QuantityControl from '../components/QuantityControl';
 import { HiX } from 'react-icons/hi';
 import { createOrder } from '../redux/features/orderSlice';
+import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function CheckoutPage() {
     const dispatch = useDispatch();
     const { total, items } = useSelector((state) => state.cart);
+    const { url } = useSelector((state) => state.orders);
     const [moreItems, setMoreItems] = useState(false);
+    const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState('COD')
     const [formData, setFormData] = useState({
         name: '',
@@ -27,11 +31,36 @@ export default function CheckoutPage() {
     };
 
     const handlePlaceOrder = async () => {
-        const result = await dispatch(createOrder(paymentMethod))
-        if (result.payload) {
+        Swal.fire({
+            title: 'Processing Order',
+            text: 'Your order is being processed. Please wait...',
+            icon: 'info',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
+        const resultAction = await dispatch(createOrder(paymentMethod));
+
+        Swal.close();
+
+        if (createOrder.fulfilled.match(resultAction)) {
+            const { approval_url } = resultAction.payload;
+            if (approval_url) {
+                window.location.href = approval_url;
+            }
+        } else if (createOrder.rejected.match(resultAction)) {
+            Swal.fire({
+                title: 'Error',
+                text: 'There was an issue processing your order. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
-    };
+    }
+
 
     return (
         <div className="container mx-auto p-4 max-w-4xl" >
@@ -79,7 +108,7 @@ export default function CheckoutPage() {
                             <div className="mb-2 w-full">
                                 <button
                                     onClick={() => setPaymentMethod("COD")}
-                                    className={`px-4 py-2 w-full rounded text-white ${paymentMethod === "COD" ? 'bg-green-400' : 'bg-blue-500'}`}
+                                    className={`px-4 py-2 w-full rounded text-white ${paymentMethod === "COD" ? 'bg-green-400' : 'bg-gray-500'}`}
                                 >
                                     Cash on Delivery (COD)
                                 </button>
@@ -87,7 +116,7 @@ export default function CheckoutPage() {
                             <div className="mb-2 w-full">
                                 <button
                                     onClick={() => setPaymentMethod("paypal")}
-                                    className={`px-4 py-2 w-full rounded text-white ${paymentMethod === "paypal" ? 'bg-green-400' : 'bg-blue-500'}`}
+                                    className={`px-4 py-2 w-full rounded text-white ${paymentMethod === "paypal" ? 'bg-green-400' : 'bg-gray-500'}`}
                                 >
                                     PayPal
                                 </button>

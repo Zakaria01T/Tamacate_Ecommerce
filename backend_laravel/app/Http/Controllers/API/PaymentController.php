@@ -17,7 +17,8 @@ class PaymentController extends Controller
 
     //functions to make an order that has a payment METHODE (PAYPAL)
     //.............................................................................
-    public function payment(){
+    public function payment()
+    {
         $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
         if (!$pannier) {
             return response()->json([
@@ -27,9 +28,7 @@ class PaymentController extends Controller
         $pannieritems = $pannier->products->toArray();
         $flag = false;
         $NameproductOutOfStock = [];
-        // dd($pannieritems);
         foreach ($pannieritems as $item) {
-            // dd($item);
             $prod = Product::find($item['id']);
             if ($prod->stock < $item["pivot"]["quantity"]) {
                 $flag = true;
@@ -44,7 +43,6 @@ class PaymentController extends Controller
             ], 400);
         }
 
-
         $total = 0;
 
         foreach ($pannieritems as $prod) {
@@ -53,25 +51,24 @@ class PaymentController extends Controller
 
         $provider = new PayPalClient;
         $provider->setApiCredentials(config("paypal"));
-        $paypalToken = $provider->getAccessToken();
-        $response =  $provider->createOrder([
-             "intent"=> "CAPTURE",
-            "application_context"=> [
-                "return_url"=> route('payment_success'),
-                "cancel_url"=> route('payment_cancel'),
+        $provider->getAccessToken(); // Ensure access token is retrieved
+        $response = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "application_context" => [
+                "return_url" => route('payment_success', ['token' => csrf_token()]),
+                "cancel_url" => route('payment_cancel'),
             ],
-            "purchase_units"=> [
+            "purchase_units" => [
                 [
-                    "amount"=>[
-                        "currency_code"=> "USD",
-                        "value"=> $total,
-
+                    "amount" => [
+                        "currency_code" => "USD",
+                        "value" => $total,
                     ]
                 ]
             ]
         ]);
-        // dd($response);
-        if (isset($response['id']) && $response['id'] != null) {
+
+        if (isset($response['id']) && $response['id'] != null && isset($response['links'])) {
             foreach ($response["links"] as $link) {
                 if ($link["rel"] === 'approve') {
                     return response()->json([
@@ -85,7 +82,7 @@ class PaymentController extends Controller
 
         return response()->json([
             "status" => "error",
-            "message" => "unable to initiate payment",
+            "message" => "Unable to initiate payment",
         ], 500);
     }
 
@@ -94,7 +91,7 @@ class PaymentController extends Controller
         $provider = new PayPalClient;
         $provider->setApiCredentials(config("paypal"));
         $paypalToken = $provider->getAccessToken();
-        $response = $provider->capturePaymentOrder($request->token);
+        $response = $provider->capturePaymentOrder($request->query('token'));
         if (isset($response["status"]) && $response["status"] == "COMPLETED") {
 
             $order = new Order();
@@ -108,7 +105,7 @@ class PaymentController extends Controller
             $order->total_price = $total;
             $order->status = "completed";
             $order->status_payment = "paid";
-            $order->payment_method="paypal";
+            $order->payment_method = "paypal";
             $order->save();
             foreach ($pannieritems as $item) {
                 $prod = Product::find($item['id']);
@@ -124,7 +121,7 @@ class PaymentController extends Controller
             $pannier->delete(); // Delete the panier
             return response()->json([
                 "status" => "success",
-                "message" =>"Payment successful.",
+                "message" => "Payment successful.",
                 "transaction_details" => $response,
             ]);
         }
@@ -142,7 +139,8 @@ class PaymentController extends Controller
         ]);
     }
     //fonction pour un ordre qui a une payment (payer jusque la commande arrive à la maison)
-    public function makeOrder() {
+    public function makeOrder()
+    {
         $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
 
         if (!$pannier) {
@@ -157,7 +155,7 @@ class PaymentController extends Controller
         $flag = false;
         $NameproductOutOfStock = [];
         // dd($pannieritems);
-        foreach($pannieritems as $item){
+        foreach ($pannieritems as $item) {
             // dd($item);
             $prod = Product::find($item['id']);
             if ($prod->stock < $item["pivot"]["quantity"]) {
@@ -166,7 +164,7 @@ class PaymentController extends Controller
             }
         }
 
-        if($flag){
+        if ($flag) {
             return response()->json([
                 'status' => 'The following products are out of stock.',
                 'products' => $NameproductOutOfStock,

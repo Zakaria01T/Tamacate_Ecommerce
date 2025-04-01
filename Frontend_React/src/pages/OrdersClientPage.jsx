@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrdersByClient } from '../redux/features/orderSlice';
+import { fetchOrders } from '../redux/features/orderSlice';
 import OrderSearchBar from '../components/orderSearchBar';
 import { HiArrowRight } from 'react-icons/hi';
 
@@ -10,15 +10,14 @@ function OrdersClientPage() {
     const [filterText, setFilterText] = useState('');
 
     useEffect(() => {
-        dispatch(fetchOrdersByClient());
-        console.log(orders)
+        dispatch(fetchOrders('client'));
     }, [dispatch]);
 
     const handleSearch = () => {
         filteredItems()
     };
 
-    const filteredItems = orders?.filter((item) => {
+    const filteredItems = orders.filter((item) => {
         const matchesText =
             item.id.toString().includes(filterText) ||
             item.user_id.toString().includes(filterText) ||

@@ -1,6 +1,3 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { updateCart } from '../redux/features/cartSlice';
 import QuantityControl from './QuantityControl';
 
 export default function CartItem({ item, onRemove }) {

@@ -15,11 +15,17 @@ class AdminOrderController extends Controller
         $orders = Order::where('status', '0')
             ->where('status_payment', 'unpaid')
             ->get();
-        return response()->json($orders);
+        foreach ($orders as $order):
+
+            $order->status = 'Pending';
+
+        endforeach;
+        return response()->json(['data' => $orders]);
     }
-    public function vieworder($id){
-        $orders = Order::where('id', $id)->first();
-        return response()->json($orders);
+    public function vieworder($id)
+    {
+        $orderItems = OrderItem::where('order_id', $id)->with('product')->get();
+        return response()->json($orderItems);
     }
     public function updateorder(Request $request, $id)
     {
@@ -29,9 +35,9 @@ class AdminOrderController extends Controller
         $order->status_payment = $request->status_payment;
         $order->update();
         return response()->json([
-                "data" => $order,
-                "message" => "the order was updated successfully"
-            ]);
+            "data" => $order,
+            "message" => "the order was updated successfully"
+        ]);
     }
     public function historyorder()
     {

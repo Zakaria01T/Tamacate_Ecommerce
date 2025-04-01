@@ -12,7 +12,10 @@ import ProductForm from './components/ProductForm';
 import Layout from './components/Layout';
 import NotFoundPage from './pages/NotFoundPage';
 import ProductsPage from './pages/ProductsPage';
-import OrdersPage from './pages/OrdersPage';
+import OrdersAdminPage from './pages/OrdersAdminPage';
+import OrdersClientPage from './pages/OrdersClientPage';
+import ShowCategories from './pages/ShowCategories';
+import CategoryForm from './components/CategoryForme';
 
 function App() {
   return (
@@ -29,13 +32,22 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/orders" element={<OrdersClientPage />} />
           </Route>
 
+
+          {/* Routes categories */}
+          <Route element={<ProtectedRoute adminOnly={true} />}>
+            <Route path="/admin/categories" element={<ShowCategories />} />
+            <Route path="/admin/categories/create" element={<CategoryForm />} />
+            <Route path="/admin/categories/edit/:id" element={<CategoryForm />} />
+
+          </Route>
           {/* Routes admin */}
           <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<ProductsPage />} />
-            <Route path="/admin/orders" element={<OrdersPage />} />
+            <Route path="/admin/orders" element={<OrdersAdminPage />} />
             <Route path="/admin/product" element={<ProductForm />} />
           </Route>
 

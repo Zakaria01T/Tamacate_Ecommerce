@@ -7,7 +7,7 @@ export const registerUser = createAsyncThunk('auth/register', async (userData, {
         const response = await API.post('/auth/register', userData);
         return response.data;
     } catch (err) {
-        return rejectWithValue(err.response.data.message || 'Erreur lors de l\'enregistrement');
+        return rejectWithValue(JSON.stringify(err.response.data.errors) || 'Erreur lors de l\'enregistrement');
     }
 });
 
@@ -59,7 +59,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.userInfo = action.payload;
+                state.userInfo = action.payload.user;
                 localStorage.setItem('userInfo', JSON.stringify(action.payload.user));
                 localStorage.setItem('csrf_token', action.payload.token);
             })

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { registerUser } from '../redux/features/authSlice'
@@ -19,11 +19,39 @@ export default function RegisterPage() {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault()
-        const result = await dispatch(registerUser(formData))
-        if (result.message) navigate('/login')
+        dispatch(registerUser(formData))
     }
+
+
+    useEffect(() => {
+        if (error) {
+            import('sweetalert2').then((Swal) => {
+                Swal.default.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: error,
+                    confirmButtonColor: 'green',
+                });
+            });
+        }
+        if (status === 'succeeded') {
+            import('sweetalert2').then((Swal) => {
+                Swal.default.fire({
+                    icon: 'success',
+                    title: 'Registration Successful',
+                    text: 'You have successfully registered!',
+                    timer: 1500,
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+
+                }).then(() => {
+                    navigate('/login')
+                });
+            });
+        }
+    }, [error, status]);
 
     return (
         <div className="container mx-auto p-4 max-w-md">
@@ -50,7 +78,7 @@ export default function RegisterPage() {
                         className="w-full p-2 border rounded"
                         value={formData.name}
                         onChange={(e) => handleChage(e)}
-                        required
+
                     />
                 </div>
 
@@ -79,7 +107,6 @@ export default function RegisterPage() {
                     />
                 </div>
 
-                {error && <p className="text-red-500">{error}</p>}
 
                 <button
                     type="submit"

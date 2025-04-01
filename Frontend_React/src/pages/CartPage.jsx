@@ -1,17 +1,33 @@
 import { useSelector, useDispatch } from 'react-redux'
-import { removeFromCart, clearCart } from '../redux/features/cartSlice'
+import { removeFromCart, fetchCart, clearCartFromServer } from '../redux/features/cartSlice'
 import CartItem from '../components/CartItem'
 import { Link } from 'react-router-dom'
 import { HiShoppingCart } from 'react-icons/hi'
+import { useEffect } from 'react'
 
 export default function CartPage() {
     const { items, total } = useSelector((state) => state.cart)
     const dispatch = useDispatch()
 
-    return (
-        <div className="container mx-auto p-4">
+    useEffect(() => {
+        dispatch(fetchCart())
+    }, [dispatch])
 
-            {items.length === 0 ? (
+    const handleClearCartFromServer = () => {
+        if (window.confirm('Are you sure you want to clear the cart?')) {
+            dispatch(clearCartFromServer())
+        }
+    }
+    const handleRemoveFromCart = (id) => {
+        if (window.confirm('Are you sure you want to remove from this cart?')) {
+            dispatch(removeFromCart(id))
+        }
+    }
+
+    return (
+        <div className="container h-screen mx-auto p-4">
+            <h2 className='font-bold text-3xl'>Cart ({items?.length})</h2>
+            {items?.length === 0 ? (
                 <div className="flex flex-col items-center gap-4">
                     <HiShoppingCart className='text-9xl text-gray-400' />
                     <p className="text-gray-600 mb-4">Your cart s empty</p>
@@ -25,7 +41,7 @@ export default function CartPage() {
                         <CartItem
                             key={item.id}
                             item={item}
-                            onRemove={() => dispatch(removeFromCart(item._id))}
+                            onRemove={() => handleRemoveFromCart(item.id)}
                         />
                     ))}
 
@@ -37,7 +53,7 @@ export default function CartPage() {
 
                         <div className="flex justify-end gap-4 mt-6">
                             <button
-                                onClick={() => dispatch(clearCart())}
+                                onClick={() => handleDelete()}
                                 className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
                             >
                                 Vider le panier
@@ -51,7 +67,8 @@ export default function CartPage() {
                         </div>
                     </div>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     )
 }

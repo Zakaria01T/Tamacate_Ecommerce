@@ -8,9 +8,9 @@ import { useSelector } from 'react-redux';
 const Layout = () => {
     const { userInfo } = useSelector((state) => state.auth)
     return (
-        <div className="flex flex-col h-screen overflow-y-scroll hide-scrollbar">
+        <div className="flex flex-col justify-between h-screen overflow-y-scroll hide-scrollbar">
             <Header />
-            <main className="">
+            <main className='h-screan flex-grow'>
                 <Outlet />
             </main>
             {userInfo?.isAdmin != 1 && <Footer />}

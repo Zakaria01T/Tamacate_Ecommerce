@@ -4,6 +4,7 @@ import CartItem from '../components/CartItem'
 import { Link } from 'react-router-dom'
 import { HiShoppingCart } from 'react-icons/hi'
 import { useEffect } from 'react'
+import Swal from 'sweetalert2'
 
 export default function CartPage() {
     const { items, total } = useSelector((state) => state.cart)
@@ -14,14 +15,45 @@ export default function CartPage() {
     }, [dispatch])
 
     const handleClearCartFromServer = () => {
-        if (window.confirm('Are you sure you want to clear the cart?')) {
-            dispatch(clearCartFromServer())
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, clear it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(clearCartFromServer())
+                Swal.fire(
+                    'Cleared!',
+                    'Your cart has been cleared.',
+                    'success'
+                )
+            }
+        })
     }
+
     const handleRemoveFromCart = (id) => {
-        if (window.confirm('Are you sure you want to remove from this cart?')) {
-            dispatch(removeFromCart(id))
-        }
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to remove this item from the cart?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(removeFromCart(id))
+                Swal.fire(
+                    'Removed!',
+                    'The item has been removed from your cart.',
+                    'success'
+                )
+            }
+        })
     }
 
     return (
@@ -53,7 +85,7 @@ export default function CartPage() {
 
                         <div className="flex justify-end gap-4 mt-6">
                             <button
-                                onClick={() => handleDelete()}
+                                onClick={() => handleClearCartFromServer()}
                                 className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300"
                             >
                                 Vider le panier

@@ -74,7 +74,8 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->controller(AdminOrderController::class)->group(function () {
     Route::get('admin_order', [AdminOrderController::class, 'index']);
     Route::get('admin_order/{id}', [AdminOrderController::class, 'vieworder']);
-    Route::put('admin_order_update/{id}', [AdminOrderController::class, 'updateorder']);
+    Route::put('admin_order/{id}', [AdminOrderController::class, 'updateorder']);
+    Route::put('admin_order_payment/{id}', [AdminOrderController::class, 'updatePaymentOrder']);
     Route::get('admin_order_history', [AdminOrderController::class, 'historyorder']);
 });
 

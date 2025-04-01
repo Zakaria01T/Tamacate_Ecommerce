@@ -2,22 +2,11 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { API } from '../../api/api';
 
 // Async thunks
-export const fetchOrdersByClient = createAsyncThunk(
-    'orders/fetchOrdersByClient',
-    async (_, { rejectWithValue }) => {
+export const fetchOrders = createAsyncThunk(
+    'orders/fetchOrders',
+    async (type, { rejectWithValue }) => {
         try {
-            const response = await API.get(`/client_order`);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
-    }
-);
-export const fetchOrdersByAdmin = createAsyncThunk(
-    'orders/fetchOrdersByAdmin',
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await API.get(`/admin_order`);
+            const response = await API.get(`/${type}_order`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -41,7 +30,29 @@ export const fetchOrderById = createAsyncThunk(
     'orders/fetchOrderById',
     async (orderId, { rejectWithValue }) => {
         try {
-            const response = await API.get(`/orders/${orderId}`);
+            const response = await API.get(`/admin_order/${orderId}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+export const updatePaymentOrder = createAsyncThunk(
+    'orders/updatePaymentOrder',
+    async (orderId, { rejectWithValue }) => {
+        try {
+            const response = await API.put(`/admin_order_payment/${orderId}`);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || error.message);
+        }
+    }
+);
+export const updateOrder = createAsyncThunk(
+    'orders/updateOrder',
+    async ({ id, status }, { rejectWithValue }) => {
+        try {
+            const response = await API.put(`/admin_order/${id}`, { status });
             return response.data;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
@@ -73,31 +84,19 @@ const orderSlice = createSlice({
     reducers: {
         clearCurrentOrder: (state) => {
             state.currentOrder = null;
-        },
+        }
     },
     extraReducers: (builder) => {
         builder
-            // Fetch all orders by client
-            .addCase(fetchOrdersByClient.pending, (state) => {
+            // Fetch all orders
+            .addCase(fetchOrders.pending, (state) => {
                 state.status = 'loading';
             })
-            .addCase(fetchOrdersByClient.fulfilled, (state, action) => {
+            .addCase(fetchOrders.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.orders = action.payload.data;
             })
-            .addCase(fetchOrdersByClient.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload;
-            })
-            //Fetch all orders by admin
-            .addCase(fetchOrdersByAdmin.pending, (state) => {
-                state.status = 'loading';
-            })
-            .addCase(fetchOrdersByAdmin.fulfilled, (state, action) => {
-                state.status = 'succeeded';
-                state.orders = action.payload.data;
-            })
-            .addCase(fetchOrdersByAdmin.rejected, (state, action) => {
+            .addCase(fetchOrders.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })
@@ -124,6 +123,16 @@ const orderSlice = createSlice({
             .addCase(fetchOrderById.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
+            })
+            //update payment of order
+            .addCase(updatePaymentOrder.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.orders = action.payload.data;
+            })
+            //update order
+            .addCase(updateOrder.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.orders = action.payload.data;
             })
             // Cancel order
             .addCase(cancelOrder.pending, (state) => {

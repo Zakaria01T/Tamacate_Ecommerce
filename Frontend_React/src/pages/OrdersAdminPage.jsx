@@ -1,19 +1,23 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { HiX } from 'react-icons/hi';
-import { API } from '../api/api';
+import { HiCheck, HiX } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrdersByAdmin } from '../redux/features/orderSlice';
+import { fetchOrderById, fetchOrders, updateOrder, updatePaymentOrder } from '../redux/features/orderSlice';
+import Swal from 'sweetalert2';
+import LoadingSpinner from '../components/LoadingSpinner';
+import OrderCard from '../components/OrderCard';
 
 function OrdersAdminPage() {
-    const dispatch = useDispatch()
-    const { orders } = useSelector((state) => state.orders)
+    const dispatch = useDispatch();
+    const { orders, currentOrder, status } = useSelector((state) => state.orders);
     const [filterText, setFilterText] = useState('');
     const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
+    const [showCard, setShowCard] = useState(false);
+    const [orderId, setOrderId] = useState(null)
 
 
     useEffect(() => {
-        dispatch(fetchOrdersByAdmin())
+        dispatch(fetchOrders('admin'))
     }, []);
 
     const filteredItems = orders?.filter(item => {
@@ -22,6 +26,53 @@ function OrdersAdminPage() {
 
         return matchesText;
     });
+
+    const handlePay = (id) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to mark this order as paid.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, mark as paid!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(updatePaymentOrder(id));
+                Swal.fire({
+                    title: 'Updated!',
+                    text: 'The order has been marked as paid.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                }
+                );
+            }
+        });
+    }
+
+    const handleUpdateOrder = (id, status) => {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to update the order status.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, update!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(updateOrder({ id, status }));
+                Swal.fire({
+                    title: 'Updated!',
+                    text: 'The order status has been updated.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        });
+    }
 
     const subHeaderComponent = useMemo(() => {
         const handleClear = () => {
@@ -50,6 +101,11 @@ function OrdersAdminPage() {
         );
     }, [filterText, resetPaginationToggle]);
 
+
+    const handleShowCard = (id) => {
+        dispatch(fetchOrderById(id))
+    }
+
     const columns = [
         {
             name: 'Order ID',
@@ -73,7 +129,10 @@ function OrdersAdminPage() {
         },
         {
             name: 'Status Payment',
-            selector: (row) => row.status_payment,
+            selector: (row) => <button
+                disabled={row.status_payment === 'paid' || row.status === 'Cancelled'}
+                onClick={() => handlePay(row.id)}
+                className={`${row.status_payment === 'unpaid' ? 'bg-red-500' : 'bg-green-500'} text-white px-4 py-2 rounded`}>{row.status_payment}</button>,
             sortable: true,
         },
         {
@@ -85,26 +144,53 @@ function OrdersAdminPage() {
             }),
             sortable: true,
         },
+        {
+            width: '25%',
+            name: 'Actions',
+            cell: (row) => <div className='flex gap-2'>
+                <button
+                    onClick={() => handleShowCard(row.id)}
+                    title='View Order'
+                    className="bg-blue-500 text-white px-4 py-2 rounded">View</button>
+                {(row.status_payment === 'unpaid' && row.status === 'Pending') && <button
+                    title='Cancel'
+                    onClick={() => handleUpdateOrder(row.id, 2)}
+                    className="bg-red-500 text-white px-4 py-2 rounded">
+                    <HiX />
+                </button>}
+                {(row.status_payment === 'unpaid' && row.status === 'Pending') && <button
+                    title='Confirm'
+                    onClick={() => handleUpdateOrder(row.id, 1)}
+                    className="bg-green-500 text-white px-4 py-2 rounded"><HiCheck /></button>}
+            </div>,
+            ignoreRowClick: true,
+            allowOverflow: true,
+            button: true,
+        }
     ];
 
     return (
-        <div className='container mx-auto p-4'>
-            <h1 className='text-3xl font-bold'>Client Orders</h1>
-            <DataTable
-                columns={columns}
-                data={filteredItems}
-                pagination
-                highlightOnHover
-                striped
-                subHeader
-                subHeaderComponent={subHeaderComponent}
-                subHeaderAlign="right"
-                persistTableHead
-                paginationResetDefaultPage={resetPaginationToggle}
-                noDataComponent="No orders found"
+        <>
+            {currentOrder && <OrderCard />}
+            <div className=' mx-auto p-4'>
+                <h1 className='text-3xl font-bold'>Client Orders</h1>
+                <DataTable
+                    progressPending={status === 'loading'}
+                    progressComponent={<LoadingSpinner />}
+                    columns={columns}
+                    data={filteredItems}
+                    pagination
+                    highlightOnHover
+                    subHeader
+                    subHeaderComponent={subHeaderComponent}
+                    subHeaderAlign="right"
+                    persistTableHead
+                    paginationResetDefaultPage={resetPaginationToggle}
+                    noDataComponent="No orders found"
 
-            />
-        </div>
+                />
+            </div>
+        </>
     );
 }
 

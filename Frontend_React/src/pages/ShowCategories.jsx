@@ -9,9 +9,11 @@ import Swal from 'sweetalert2';
 
 export default function ShowCategories() {
   const dispatch = useDispatch();
+  
   const { items: categories = [], status = 'idle', error = null } = useSelector(
-    (state) => state.categories || {}
+    (state) => state.categories || { items: [] }
   );
+  const safeCategories = Array.isArray(categories) ? categories : [];
 
 
 
@@ -86,7 +88,11 @@ export default function ShowCategories() {
     return <LoadingSpinner />;
   }
   if (status === 'failed') {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="p-4 text-red-500">
+        Error: {error?.message || 'Failed to load categories'}
+      </div>
+    );
   }
 
 
@@ -103,14 +109,14 @@ export default function ShowCategories() {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
+      
         <DataTable
           columns={columns}
-          data={categories}
+          data={safeCategories}
           pagination
           highlightOnHover
           pointerOnHover
           responsive
-          noDataComponent="No caregories found"
         />
       </div>
     </div>

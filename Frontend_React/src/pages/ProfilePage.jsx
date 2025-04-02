@@ -1,68 +1,74 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { fetchUser } from '../redux/features/userSlice';
-import { logout } from '../redux/features/authSlice';
 import ProfileInfo from '../components/ProfileInfo';
 import PasswordChange from '../components/PasswordChange';
 import AccountDeletion from '../components/AccountDeletion';
-import Swal from 'sweetalert2';
-import LoadingSpinner from '../components/LoadingSpinner';
 
-const ProfilePage = () => {
-    const dispatch = useDispatch();
-    const { status, user, error } = useSelector((state) => state.user);
+export default function ProfilePage() {
+  const dispatch = useDispatch();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-
-        if (status === 'idle') {
-            dispatch(fetchUser()).finally(() => {
-                Swal.close();
-            });
+  useEffect(() => {
+    const getUserData = async () => {
+      setLoading(true);
+      try {
+        const resultAction = await dispatch(fetchUser());
+        if (fetchUser.fulfilled.match(resultAction)) {
+          setUser(resultAction.payload);
+        } else if (fetchUser.rejected.match(resultAction)) {
+          setError(resultAction.payload || 'Failed to fetch user data');
         }
-        if (status === 'loading') {
-            Swal.fire({
-                title: 'Loading',
-                text: 'Please wait while we fetch the user details.',
-                icon: 'info',
-                showConfirmButton: false,
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-        }
+      } catch (err) {
+        setError('An unexpected error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-        if (error) {
-            Swal.fire({
-                title: 'Error',
-                text: error,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        }
-    }, [dispatch, status, error]); // Add status and error to the dependency array
+    getUserData();
+  }, [dispatch]);
 
+  if (loading) {
     return (
-        <div className="container mx-auto p-4 max-w-6xl">
-            <div className="flex justify-between items-center mb-8">
-                <h1 className="text-3xl font-bold">Profile Settings</h1>
-            </div>
-
-            {/* Main content with split layout */}
-            {user && status === 'succeeded' &&
-                <div className="flex flex-col md:flex-row gap-6">
-                    {/* Left half - ProfileInfo */}
-                    <div className="w-full md:w-1/2">
-                        <ProfileInfo user={user} />
-                    </div>
-
-                    {/* Right half - PasswordChange and AccountDeletion stacked */}
-                    <div className="w-full md:w-1/2 space-y-6">
-                        <PasswordChange />
-                        <AccountDeletion />
-                    </div>
-                </div>}
-        </div>
+      <div className="container mx-auto p-4 flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+      </div>
     );
-};
-export default ProfilePage;
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {error}</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto p-4 max-w-6xl">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Profile Settings</h1>
+      </div>
+
+      {/* Main content with split layout */}
+      <div className="flex flex-col md:flex-row gap-6">
+        {/* Left half - ProfileInfo */}
+        <div className="w-full md:w-1/2">
+          <ProfileInfo user={user} />
+        </div>
+
+        {/* Right half - PasswordChange and AccountDeletion stacked */}
+        <div className="w-full md:w-1/2 space-y-6">
+          <PasswordChange />
+          <AccountDeletion />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -96,9 +96,12 @@ class PaymentController extends Controller
             $this->makeOrderFromPaypal("success");
             return redirect(env('APP_URL') . ':3000/orders?success=true');
         }
-        $this->makeOrderFromPaypal("cancelled");
 
-        return redirect(env('APP_URL') . ':3000/orders?success=false')->with('error', 'Payment failed. Please try again.');
+        return response()->json([
+            "status" => "cancelled",
+            "message" => "Payment Failed.",
+
+        ], 400);
     }
     public function cancel()
     {
@@ -107,15 +110,15 @@ class PaymentController extends Controller
             "message" => "The payment was canceled by the user.",
         ]);
     }
-    public function makeOrderFromPaypal($status)
+    public function makeOrderFromPaypal(Request $request)
     {
-        if ($status == "cancelled") {
+        if ($request->status == "cancelled") {
             return response()->json([
-                "status" => "cancelled",
+                "status" => "failed",
                 "message" => "You have trouble paying for the order.",
             ], 500);
         }
-        $pannier = Panier::where('user_id', 2)->with("products")->first();
+        $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
 
         if (!$pannier) {
             return response()->json([
@@ -245,7 +248,7 @@ class PaymentController extends Controller
         $pannier->delete(); // Delete the panier
 
         return response()->json(data: [
-            'status' => 'success',
+            'status' => 'Successed',
             'message' => 'Your order was added successfully.',
         ]);
     }

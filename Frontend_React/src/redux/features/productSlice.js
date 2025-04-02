@@ -5,6 +5,7 @@ import { API } from '../../api/api';
 export const fetchProducts = createAsyncThunk('products/fetchAll', async (_, { rejectWithValue }) => {
   try {
     const { data } = await API.get('/products');
+    console.log(data) 
     return data;
   } catch (error) {
     return rejectWithValue(error.response?.data || error.message);

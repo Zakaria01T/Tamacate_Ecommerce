@@ -154,7 +154,21 @@ const orderSlice = createSlice({
             .addCase(cancelOrder.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
-            });
+            })
+            .addCase(cancelOrderClient.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(cancelOrderClient.fulfilled, (state, action) => {
+                state.status = "succeeded";
+                state.orders = state.orders.filter(
+                    (order) => order.id !== action.meta.arg
+                );
+            })
+            .addCase(cancelOrderClient.rejected, (state, action) => {
+                state.status = "failed";
+                state.error = action.payload;
+            })
+
     },
 });
 

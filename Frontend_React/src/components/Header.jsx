@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocument, HiDocumentText } from 'react-icons/hi';
 import { useState } from 'react';
-import { logout } from '../redux/features/authSlice';
 
 export default function Header() {
   const { userInfo } = useSelector((state) => state.auth);
@@ -38,9 +37,13 @@ export default function Header() {
                   <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                     Dashboard
                   </Link>
+                  <Link to="/admin/categories" className="text-gray-600 hover:text-blue-600">
+                    Categories
+                  </Link>
                   <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
                     Products
                   </Link>
+
                   <Link to="/admin/orders" className="text-gray-600 hover:text-blue-600">
                     Orders
                   </Link>
@@ -89,7 +92,7 @@ export default function Header() {
                     }
                     <button
                       onClick={() => {
-                        dispatch(logout());
+                        dispatch(logoutUser());
                         setIsProfileOpen(false);
                       }}
                       className="flex justify-start gap-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 "

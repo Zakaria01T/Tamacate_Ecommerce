@@ -21,6 +21,18 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
     }
 });
 
+// Action asynchrone pour la déconnexion
+export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
+    try {
+        const response = await API.post('/logout'); // Appelle l'API de déconnexion protégée par Sanctum
+        localStorage.removeItem('userInfo');
+        localStorage.removeItem('csrf_token');
+        return response.data;
+    } catch (err) {
+        return rejectWithValue(err.response?.data?.message || 'Erreur lors de la déconnexion');
+    }
+});
+
 // Slice Redux
 const authSlice = createSlice({
     name: 'auth',
@@ -73,5 +85,4 @@ const authSlice = createSlice({
 });
 
 // Export des actions et du reducer
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;

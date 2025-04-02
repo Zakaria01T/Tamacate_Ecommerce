@@ -48,8 +48,9 @@ const categorySlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = action.payload;
+      state.status = "succeeded";
+      // Ensure we always store an array, even if payload is empty
+      state.items = action.payload.data || [];
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.status = "failed";

@@ -11,18 +11,30 @@ use Illuminate\Support\Facades\Auth;
 
 class ClientOrderController extends Controller
 {
-    public function index()
+    public function getOrders()
     {
         $orders = Order::where('user_id', Auth::id())->with("user")->get();
+        $status = [
+            'Pending',
+            'Confirmed',
+            'Cancelled',
+        ];
 
-        return response()->json($orders);
+        foreach ($orders as $order):
+            $order->status = $status[$order->status];
+        endforeach;
 
+        return $orders;
+    }
+    public function index()
+    {
+
+        return response()->json(['data' => $this->getOrders()]);
     }
 
-    public function vieworder($id)
-    {
+    public function vieworder($id){
         $orderItems  = OrderItem::where('order_id', $id)->with('product', "order")->get();
-        return response()->json($orderItems);
+        return response()->json(['data' =>$orderItems]);
     }
 
 

@@ -57,9 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('payment_COD', [PaymentController::class, 'makeOrder']);
     Route::get('payment_paypal', [PaymentController::class, 'payment']);
-    Route::get('payment_success', [PaymentController::class, 'success'])->name('payment_success');
-    Route::get('payment_cancel', [PaymentController::class, 'cancel'])->name("payment_cancel");
+    Route::post('confirm_order_from_paypal', [PaymentController::class, 'makeOrderFromPaypal']);
 });
+Route::get('payment_success', [PaymentController::class, 'success'])->name('payment_success');
+Route::get('payment_cancel', [PaymentController::class, 'cancel'])->name("payment_cancel");
 
 //client Order
 Route::middleware('auth:sanctum')->group(function () {
@@ -81,8 +82,8 @@ Route::middleware('auth:sanctum')->controller(AdminOrderController::class)->grou
 
 //user
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/getUser', [UserController::class, 'getUser']);
-    Route::put('/updateUser', [UserController::class, 'updateUser']);
+    Route::get('/user', [UserController::class, 'getUser']);
+    Route::put('/user', [UserController::class, 'updateUser']);
     Route::put('/updatePassword', [UserController::class, 'updatePassword']);
     Route::delete('/delete-account', [UserController::class, 'deleteAccount']);
     Route::get('/users', [UserController::class, 'getNotAdmittedUsers']);

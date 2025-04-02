@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../redux/features/userSlice';
 import Swal from 'sweetalert2';
 
-export default function ProfileInfo({ user }) {
+export default function ProfileInfo({ user, className = '' }) {
   const dispatch = useDispatch();
-  const { status } = useSelector((state) => state.auth);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
+    ...user,
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
@@ -21,7 +21,6 @@ export default function ProfileInfo({ user }) {
       : 'https://www.pngkey.com/png/full/349-3499617_person-gray.png',
   );
 
-  // Clean up object URLs when component unmounts
   useEffect(() => () => {
     if (previewUrl && previewUrl.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrl);
@@ -33,7 +32,6 @@ export default function ProfileInfo({ user }) {
       const file = e.target.files[0];
       if (file) {
         setSelectedFile(file);
-        // Create preview URL for the selected file
         const filePreviewUrl = URL.createObjectURL(file);
         setPreviewUrl(filePreviewUrl);
       }
@@ -45,7 +43,7 @@ export default function ProfileInfo({ user }) {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
     data.append('first_name', formData.first_name);
@@ -58,8 +56,7 @@ export default function ProfileInfo({ user }) {
       data.append('image', selectedFile);
     }
 
-    dispatch(updateUser(data))
-    if (status === 'loading') {
+    try {
       Swal.fire({
         title: 'Updating...',
         text: 'Please wait while we update your profile.',
@@ -67,26 +64,35 @@ export default function ProfileInfo({ user }) {
         didOpen: () => {
           Swal.showLoading();
         },
-      })
-        .then(() => {
-          Swal.close();
-          Swal.fire({
-            icon: 'success',
-            title: 'Profile Updated',
-            text: 'Your profile has been successfully updated.',
-          });
-          // Reset selected file after successful update
-          setSelectedFile(null);
-        });
-    };
-  }
+      });
+
+      await dispatch(updateUser(data)).unwrap();
+
+      Swal.close();
+      Swal.fire({
+        icon: 'success',
+        title: 'Profile Updated',
+        text: 'Your profile has been successfully updated.',
+        showConfirmButton: false
+      }).then(window.location.reload());
+
+      setSelectedFile(null);
+    } catch (error) {
+      Swal.close();
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'There was an error updating your profile. Please try again.',
+      });
+    }
+  };
 
   const handleClick = () => {
     fileInputRef.current.click();
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md mb-6">
+    <div className={`bg-white p-6 rounded-lg shadow-md mb-6 ${className}`}>
       <h2 className="text-xl font-semibold mb-4">Personal Information</h2>
 
       <div className="flex items-center mb-6">

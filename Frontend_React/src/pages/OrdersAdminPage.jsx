@@ -103,7 +103,19 @@ function OrdersAdminPage() {
 
 
     const handleShowCard = (id) => {
-        dispatch(fetchOrderById(id))
+        Swal.fire({
+            title: 'Loading Order Details',
+            text: 'Please wait while we fetch the order details.',
+            icon: 'info',
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        dispatch(fetchOrderById(id)).finally(() => {
+            Swal.close();
+        });
     }
 
     const columns = [

@@ -112,7 +112,8 @@ class PaymentController extends Controller
             "message" => "The payment was canceled by the user.",
         ]);
     }
-    public function makeOrderFromPaypal(Request $request){
+    public function makeOrderFromPaypal(Request $request)
+    {
         if ($request->status == "failed") {
             return response()->json([
                 "status" => "failed",
@@ -195,7 +196,7 @@ class PaymentController extends Controller
 
         if (!$pannier) {
             return response()->json([
-                'status' => 'Your cart is empty.',
+                'message' => 'Your cart is empty.',
             ], 400);
         }
         //return response()->json($carteitems);
@@ -248,7 +249,8 @@ class PaymentController extends Controller
         $pannier->delete(); // Delete the panier
 
         return response()->json(data: [
-            'status' => 'Your order was added successfully.',
+            'status' => 'Successed',
+            'message' => 'Your order was added successfully.',
         ]);
     }
 }

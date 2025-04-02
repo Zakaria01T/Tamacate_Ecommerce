@@ -184,8 +184,8 @@ function OrdersAdminPage() {
     return (
         <>
             {currentOrder && <OrderCard />}
-            <div className=' mx-auto p-4'>
-                <h1 className='text-3xl font-bold'>Client Orders</h1>
+            <div className=' mx-auto p-4 '>
+                <h1 className='w-fit text-3xl font-bold border-b-4 border-green-600'>Orders</h1>
                 <DataTable
                     progressPending={status === 'loading'}
                     progressComponent={<LoadingSpinner />}

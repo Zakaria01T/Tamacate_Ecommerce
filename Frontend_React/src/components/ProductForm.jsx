@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { API } from '../api/api';
 import { createProduct, updateProduct } from '../redux/features/productSlice';
 import LoadingSpinner from './LoadingSpinner';
+import Swal from 'sweetalert2';
 
 export default function ProductForm() {
   const location = useLocation();
@@ -79,13 +80,23 @@ export default function ProductForm() {
         dispatch(createProduct(formData));
       }
 
-      alert(`Product ${isEditing ? 'updated' : 'created'} successfully!`);
+      Swal.fire({
+        icon: 'success',
+        title: `Product ${isEditing ? 'updated' : 'created'} successfully!`,
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
       navigate(-1);
     } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Failed to save product. Please try again.');
-    }
-  };
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to save product',
+        text: 'Please try again.',
+      });
+
+    };
+  }
   return (
     <form onSubmit={handleSubmit} className="container mx-auto space-y-6 overflow-y-scroll h-screen hide-scrollbar p-4">
       <div className="grid gap-4">
@@ -167,7 +178,7 @@ export default function ProductForm() {
           <img
             src={formData.image instanceof File
               ? URL.createObjectURL(formData.image)
-              : `http://localhost:8000/storage/${formData.image}`}
+              : `http://localhost:8000/images/products/${formData.image}`}
             alt="Product"
             className="w-32 h-32 object-cover rounded-lg"
           />

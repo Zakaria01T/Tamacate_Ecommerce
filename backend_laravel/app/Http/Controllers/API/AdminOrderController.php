@@ -41,6 +41,16 @@ class AdminOrderController extends Controller
         //dd($request->all());
         $order = Order::find($id);
         $order->status = $request->status;
+        if ($request->status == 2) {
+            $orderItems = OrderItem::where('order_id', $id)->get();
+            foreach ($orderItems as $item) {
+                $product = $item->product;
+                if ($product) {
+                    $product->stock += $item->quantity;
+                    $product->save();
+                }
+            }
+        }
         $order->update();
         return response()->json([
             "data" => $this->getOrders()

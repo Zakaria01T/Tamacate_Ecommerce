@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <nav className="container mx-auto p-4 flex justify-between items-center">
-        <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-blue-600">
+        <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-green-600">
           TAMACAT.com
         </Link>
 

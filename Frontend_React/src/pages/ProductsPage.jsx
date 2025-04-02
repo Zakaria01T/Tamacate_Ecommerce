@@ -50,6 +50,8 @@ const ProductsPage = () => {
 
   // Filter products based on search text
   const filteredItems = items.filter((item) => {
+    if (!filterText) return true; // If no filter text, show all items
+
     const matchesText = item.name.toLowerCase().includes(filterText.toLowerCase())
       || (item.price.toString().includes(filterText))
       || (item.stock.toString().includes(filterText));

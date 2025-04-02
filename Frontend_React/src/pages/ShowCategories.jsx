@@ -117,12 +117,7 @@ export default function ShowCategories() {
           highlightOnHover
           pointerOnHover
           responsive
-          noDataComponent={
-            <div className="py-8 text-center text-gray-500">
-              No categories available. Create your first category!
-            </div>
-          }        />
-      
+        />
       </div>
     </div>
   );

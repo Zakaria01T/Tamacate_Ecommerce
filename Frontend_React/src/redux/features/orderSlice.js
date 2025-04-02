@@ -123,9 +123,6 @@ const orderSlice = createSlice({
                 state.error = action.payload;
             })
             // Fetch order by ID
-            .addCase(fetchOrderById.pending, (state) => {
-                state.status = 'loading';
-            })
             .addCase(fetchOrderById.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.currentOrder = action.payload.data;

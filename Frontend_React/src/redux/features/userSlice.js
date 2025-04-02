@@ -1,4 +1,3 @@
-// src/redux/features/userSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { API } from '../../api/api';
 
@@ -44,7 +43,7 @@ export const deleteAccount = createAsyncThunk(
   async (password, { rejectWithValue }) => {
     try {
       const response = await API.delete('/delete-account', { data: { password } });
-      return response.data;
+      return response.data.message;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete account');
     }
@@ -59,7 +58,11 @@ const userSlice = createSlice({
     error: null,
   },
   reducers: {
-    // Synchronous reducers if needed
+    resetUserState: (state) => {
+      state.user = null;
+      state.status = 'idle';
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -74,6 +77,7 @@ const userSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+        state.user = null; // Clear user on failed fetch
       })
 
       // Update User
@@ -86,11 +90,12 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload.error;
+        state.error = action.payload;
       });
 
     // Add similar cases for updatePassword and deleteAccount
   },
 });
 
+export const { resetUserState } = userSlice.actions;
 export default userSlice.reducer;

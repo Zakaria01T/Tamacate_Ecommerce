@@ -59,9 +59,9 @@ const OrderCard = () => {
                         </div>
                     ))}
                 </div>
-                <div className="mt-6 border-t pt-4 flex justify-end items-center">
-                    <p className="text-lg  font-semibold text-black-800">
-                        Total Price:
+                <div className="mt-6 border-t pt-4 flex justify-between items-center">
+                    <p className="text-lg  font-semibold text-gray-800">
+                        Total Price=
                     </p>
                     <p className="font-bold ">MAD {calculTotalPrice()}
                     </p>

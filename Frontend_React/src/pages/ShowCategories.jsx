@@ -110,6 +110,7 @@ export default function ShowCategories() {
           highlightOnHover
           pointerOnHover
           responsive
+          noDataComponent="No caregories found"
         />
       </div>
     </div>

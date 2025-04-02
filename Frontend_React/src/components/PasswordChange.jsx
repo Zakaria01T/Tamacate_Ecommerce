@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { updatePassword } from '../redux/features/userSlice';
+import Swal from 'sweetalert2';
 
 export default function PasswordChange() {
   const dispatch = useDispatch();
@@ -18,15 +19,46 @@ export default function PasswordChange() {
     });
   };
 
-  const handlePasswordSubmit = (e) => {
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    dispatch(updatePassword(passwordData));
-    setInEditPassword(false);
-    setPasswordData({
-      password: '',
-      new_password: '',
-      new_password_confirmation: '',
+    
+    // Show loading indicator
+    Swal.fire({
+      title: 'Processing',
+      html: 'Updating your password...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
     });
+
+    try {
+      // Dispatch the updatePassword action and wait for the result
+      const result = await dispatch(updatePassword(passwordData)).unwrap();
+      
+      // On success
+      Swal.fire({
+        title: 'Success!',
+        text: 'Your password has been updated successfully.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
+      
+      setInEditPassword(false);
+      setPasswordData({
+        password: '',
+        new_password: '',
+        new_password_confirmation: '',
+      });
+    } catch (error) {
+      // On error
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'Failed to update password. Please try again.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
+    }
   };
 
   const handleEdit = () => {
@@ -51,6 +83,7 @@ export default function PasswordChange() {
                 onChange={handlePasswordChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter current password"
+                required
               />
             </div>
 
@@ -67,6 +100,8 @@ export default function PasswordChange() {
                   onChange={handlePasswordChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Enter new password"
+                  required
+                  minLength="8"
                 />
               </div>
               <div>
@@ -81,6 +116,8 @@ export default function PasswordChange() {
                   onChange={handlePasswordChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Confirm new password"
+                  required
+                  minLength="8"
                 />
               </div>
             </div>

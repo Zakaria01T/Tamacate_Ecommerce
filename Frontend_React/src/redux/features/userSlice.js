@@ -1,6 +1,6 @@
-// src/redux/features/userSlice.js
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { API } from '../../api/api';
+import { logoutUser } from './authSlice'; // Import logout action
 
 // User actions
 export const fetchUser = createAsyncThunk(
@@ -44,6 +44,8 @@ export const deleteAccount = createAsyncThunk(
   async (password, { rejectWithValue }) => {
     try {
       const response = await API.delete('/delete-account', { data: { password } });
+      localStorage.removeItem('userInfo');
+      localStorage.removeItem('csrf_token');
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete account');
@@ -59,7 +61,11 @@ const userSlice = createSlice({
     error: null,
   },
   reducers: {
-    // Synchronous reducers if needed
+    resetUserState: (state) => {
+      state.user = null;
+      state.status = 'idle';
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -74,6 +80,7 @@ const userSlice = createSlice({
       .addCase(fetchUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+        state.user = null; // Clear user on failed fetch
       })
 
       // Update User
@@ -86,11 +93,42 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload.error;
-      });
+        state.error = action.payload;
+      })
 
-    // Add similar cases for updatePassword and deleteAccount
+      // Update Password
+      .addCase(updatePassword.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Delete Account
+      .addCase(deleteAccount.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteAccount.fulfilled, (state) => {
+        state.status = 'idle';
+        state.user = null;
+      })
+      .addCase(deleteAccount.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+
+      // Listen for logout action from authSlice
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.status = 'idle';
+        state.error = null;
+      });
   },
 });
 
+export const { resetUserState } = userSlice.actions;
 export default userSlice.reducer;

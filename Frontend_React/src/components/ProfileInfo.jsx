@@ -11,7 +11,8 @@ export default function ProfileInfo({ user, className = '' }) {
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
     email: user?.email || '',
-    phone_number: user?.phone_number || '',
+    phone: user?.phone || '',
+    address: user?.address || '',
     _method: 'PUT',
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -49,7 +50,8 @@ export default function ProfileInfo({ user, className = '' }) {
     data.append('first_name', formData.first_name);
     data.append('last_name', formData.last_name);
     data.append('email', formData.email);
-    data.append('phone_number', formData.phone_number);
+    data.append('address', formData.address);
+    data.append('phone', formData.phone);
     data.append('_method', 'PUT');
 
     if (selectedFile) {
@@ -137,6 +139,35 @@ export default function ProfileInfo({ user, className = '' }) {
               id="last_name"
               name="last_name"
               value={formData.last_name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
+              address
+            </label>
+            <input
+              type="text"
+              id="address"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
+              phone
+            </label>
+            <input
+              type="text"
+              id="phone"
+              name="phone"
+              value={formData.phone}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />

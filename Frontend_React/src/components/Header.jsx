@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown } from 'react-icons/hi';
+import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocumentText } from 'react-icons/hi';
 import { logout } from '../redux/features/authSlice';
 import { useState } from 'react';
 
@@ -46,17 +46,17 @@ export default function Header() {
                   </Link>
                 </>
               )}
-              
+
               {/* Profile dropdown */}
               <div className="relative">
-                <button 
+                <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
+                  className="flex items-center gap-1 text-2xl text-gray-600 hover:text-blue-600"
                 >
                   {userInfo.image ? (
-                    <img 
-                      src={userInfo.image} 
-                      alt="Profile" 
+                    <img
+                      src={userInfo.image}
+                      alt="Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (
@@ -64,29 +64,32 @@ export default function Header() {
                   )}
                   <HiChevronDown className={`transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
                 </button>
-                
+
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className=" px-4 flex items-center gap-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      My Profile
+                      <HiUser className='text-xl' />
+                      <p>My Profile</p>
                     </Link>
                     <Link
                       to="/orders"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className=" flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setIsProfileOpen(false)}
                     >
-                      My Orders
+
+                      <HiDocumentText className='text-xl' />
+                      <p>My Orders</p>
                     </Link>
                     <button
                       onClick={() => {
                         dispatch(logout());
                         setIsProfileOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      className=" px-4 flex items-center gap-2 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     >
                       <HiLogout />
                       Logout

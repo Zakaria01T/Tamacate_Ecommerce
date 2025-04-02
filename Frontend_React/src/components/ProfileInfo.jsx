@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { updateUser } from '../redux/features/userSlice';
+import Swal from 'sweetalert2';
 
 export default function ProfileInfo({ user }) {
   const dispatch = useDispatch();
+  const { status } = useSelector((state) => state.auth);
   const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     first_name: user?.first_name || '',
@@ -57,11 +59,27 @@ export default function ProfileInfo({ user }) {
     }
 
     dispatch(updateUser(data))
-      .then(() => {
-        // Reset selected file after successful update
-        setSelectedFile(null);
-      });
-  };
+    if (status === 'loading') {
+      Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update your profile.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      })
+        .then(() => {
+          Swal.close();
+          Swal.fire({
+            icon: 'success',
+            title: 'Profile Updated',
+            text: 'Your profile has been successfully updated.',
+          });
+          // Reset selected file after successful update
+          setSelectedFile(null);
+        });
+    };
+  }
 
   const handleClick = () => {
     fileInputRef.current.click();

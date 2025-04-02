@@ -7,11 +7,10 @@ export const fetchUser = createAsyncThunk(
   'user/fetchUser',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await API.get('/getUser');
-      console.log(response.data.user)
-      return response.data.user;
+      const response = await API.get('/user');
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to fetch user data');
+      return rejectWithValue(err.response?.message || 'Failed to fetch user data');
     }
   },
 );
@@ -20,10 +19,10 @@ export const updateUser = createAsyncThunk(
   'user/updateUser',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await API.post('/updateUser', userData);
-      return response.data.user;
+      const response = await API.post('/user', userData);
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to update user');
+      return rejectWithValue(err.response?.message || 'Failed to update user');
     }
   },
 );
@@ -33,9 +32,9 @@ export const updatePassword = createAsyncThunk(
   async (passwordData, { rejectWithValue }) => {
     try {
       const response = await API.put('/updatePassword', passwordData);
-      return response.data.message;
+      return response.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || 'Failed to update password');
+      return rejectWithValue(err.response?.message || 'Failed to update password');
     }
   },
 );
@@ -45,7 +44,7 @@ export const deleteAccount = createAsyncThunk(
   async (password, { rejectWithValue }) => {
     try {
       const response = await API.delete('/delete-account', { data: { password } });
-      return response.data.message;
+      return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete account');
     }
@@ -55,7 +54,7 @@ export const deleteAccount = createAsyncThunk(
 const userSlice = createSlice({
   name: 'user',
   initialState: {
-    data: null,
+    user: null,
     status: 'idle',
     error: null,
   },
@@ -70,7 +69,7 @@ const userSlice = createSlice({
       })
       .addCase(fetchUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.data = action.payload;
+        state.user = action.payload;
       })
       .addCase(fetchUser.rejected, (state, action) => {
         state.status = 'failed';
@@ -83,11 +82,11 @@ const userSlice = createSlice({
       })
       .addCase(updateUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.data = action.payload;
+        state.user = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload;
+        state.error = action.payload.error;
       });
 
     // Add similar cases for updatePassword and deleteAccount

@@ -18,9 +18,12 @@ const OrderCard = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="relative w-11/12 max-w-3xl bg-white rounded-lg shadow-lg p-6">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                        Order ID: {currentOrder.id}
-                    </h2>
+                    <div className="flex justify-center items-center w-full">
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            Order ID:
+                        </h2>
+                        <p className="text-xl font-semibold text-black-800">{currentOrder[0].order_id}</p>
+                    </div>
                     <HiX
                         className="text-3xl text-gray-600 cursor-pointer hover:text-red-500"
                         onClick={() => dispatch(clearCurrentOrder())}
@@ -56,8 +59,8 @@ const OrderCard = () => {
                         </div>
                     ))}
                 </div>
-                <div className="mt-6 border-t pt-4 flex justify-between items-center">
-                    <p className="text-lg  font-semibold text-gray-800">
+                <div className="mt-6 border-t pt-4 flex justify-end items-center">
+                    <p className="text-lg  font-semibold text-black-800">
                         Total Price=
                     </p>
                     <p className="font-bold ">MAD {calculTotalPrice()}

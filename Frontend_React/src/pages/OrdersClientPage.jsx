@@ -2,13 +2,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { HiCheck, HiX,HiEye } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchOrders, cancelOrderClient, fetchOrderByIdForClient } from '../redux/features/orderSlice';
+import { fetchOrders, cancelOrderClient, fetchOrderById } from '../redux/features/orderSlice';
 import Swal from 'sweetalert2';
 import LoadingSpinner from '../components/LoadingSpinner';
+import OrderCard from '../components/OrderCard';
 
 function OrdersClientPage() {
-  const [isOpen, setIsOpen] = useState(false);
-
+  
   const dispatch = useDispatch();
   const { orders, status, currentOrder } = useSelector((state) => state.orders);
   const [filterText, setFilterText] = useState('');
@@ -45,10 +45,19 @@ function OrdersClientPage() {
   };
 
   const handleShowItems = (id) => {
-    dispatch(fetchOrderByIdForClient(id));
-    console.log(currentOrder);
-    setIsOpen(true);
-    
+      Swal.fire({
+        title: 'Loading Order Details',
+        text: 'Please wait while we fetch the order details.',
+        icon: 'info',
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+      });
+      dispatch(fetchOrderById(id)).finally(() => {
+          Swal.close();
+      });
   };
 
   const filteredItems = orders?.filter((order) =>
@@ -108,8 +117,8 @@ function OrdersClientPage() {
       name: 'Status',
       sortable: true,
       cell: (row) => (
-        <span className={`${row.status == 0 ? 'bg-yellow-500' : row.status == 1 ? "bg-green-600" : "bg-red-600"} font-bold p-2 text-white rounded-full`}>
-          {row.status == 0 ? "Pending" : row.status == 1 ? "Confirmed" : "Cancelled"}
+        <span className={`${row.status == "Pending" ? 'bg-yellow-500' : row.status == "Confirmed" ? "bg-green-600" : "bg-red-600"} font-bold p-2 text-white rounded-full`}>
+          {row.status}
         </span>
       ),
     },
@@ -154,7 +163,7 @@ function OrdersClientPage() {
           >
             <HiEye className='font-bold' />
           </button>
-          {(row.status_payment === 'unpaid' && row.status === 0) && (
+          {(row.status_payment === 'unpaid' && row.status === "Pending") && (
             <button
               title='Cancel'
               onClick={() => handleCancel(row.id)}
@@ -173,33 +182,7 @@ function OrdersClientPage() {
     <div className='container mx-auto p-4'>
       <h1 className='text-3xl font-bold mb-6'>Client Orders</h1>
 
-      {/* Popup Modal */}
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Order Details #{currentOrder?.id || ''}</h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl"
-              >
-                ✕
-              </button>
-            </div>
-
-            
-
-            <div className="flex justify-end mt-6">
-              <button
-                onClick={() => setIsOpen(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {currentOrder && <OrderCard />}
 
       <DataTable
         progressPending={status === 'loading'}

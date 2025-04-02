@@ -113,6 +113,7 @@ class PaymentController extends Controller
         ]);
     }
     public function makeOrderFromPaypal(Request $request){
+        
         if ($request->status == "cancelled") {
             return response()->json([
                 "status" => "failed",

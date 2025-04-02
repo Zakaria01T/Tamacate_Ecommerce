@@ -54,12 +54,6 @@ export default function ProfilePage() {
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Profile Settings</h1>
-        <button
-          onClick={() => dispatch(logout())}
-          className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
-        >
-          Logout
-        </button>
       </div>
 
       {/* Main content with split layout */}

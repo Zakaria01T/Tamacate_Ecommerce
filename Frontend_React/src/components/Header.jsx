@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocumentText } from 'react-icons/hi';
-import { logout } from '../redux/features/authSlice';
+import { logoutUser } from '../redux/features/authSlice';
 import { useState } from 'react';
 
 export default function Header() {

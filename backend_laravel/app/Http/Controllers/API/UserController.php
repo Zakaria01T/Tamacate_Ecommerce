@@ -28,78 +28,62 @@ class UserController extends Controller
         ]);
     }
 
-    public function updatePassword(Request $request)
-    {
-        $request->validate([
-            'password' => 'required|string',
-            'new_password' => 'required|string|confirmed',
-            'new_password_confirmation' => 'required|string',
-        ]);
-
-        $user = Auth::user();
-        $currentPassword = $request->password;
-        $newPassword = $request->new_password;
-
-        if (Hash::check($currentPassword, $user->password)) {
-            $user->password = Hash::make($newPassword);
-            $user->save();
-
-            return response()->json(['message' => 'Password updated successfully'], 200);
-        }
-
-        return response()->json(['error' => 'Current password is incorrect'], 422);
-    }
-
     public function updateUser(Request $request)
-    {
-        try {
-            $user = Auth::user();
+{
+    try {
+        $user = Auth::user();
 
-            if (!$user) {
-                return response()->json(['error' => 'Unauthorized'], 401);
-            }
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
 
         $validator = Validator::make($request->all(), [
             'first_name' => 'string|max:255|regex:/^[a-zA-Z\s]+$/',
             'last_name' => 'string|max:255|regex:/^[a-zA-Z\s]+$/',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20|regex:/^[0-9\+\-\s]+$/',
+            'address' => 'nullable|string|max:500',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // 2MB max
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
+            return response()->json(['error' => $validator->errors()], 422);
         }
 
         // Update user data
         $user->first_name = strip_tags($request->input('first_name'));
         $user->last_name = strip_tags($request->input('last_name'));
         $user->email = strip_tags($request->input('email'));
+        $user->phone = strip_tags($request->input('phone'));
+        $user->address = strip_tags($request->input('address'));
 
-            // Handle image upload
-            if ($request->hasFile('image')) {
-                // Delete old image if exists
-                if ($user->image && file_exists(public_path($user->image))) {
-                    unlink(public_path($user->image));
-                }
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($user->image && file_exists(public_path($user->image))) {
+                unlink(public_path($user->image));
+            }
 
             $image = $request->file('image');
             $filename = 'profile_' . $user->id . '_' . time() . '.' . $image->getClientOriginalExtension();
-            
+
             // Store in public/images/userProfile
             $path = $image->move(public_path('images/userProfile'), $filename);
-            
+
             // Save relative path in database
             $user->image = 'images/userProfile/' . $filename;
         }
 
-            $user->save();
+        $user->save();
 
         return response()->json([
             'message' => 'User data updated successfully',
-            'user' => [
+            'data' => [
                 'first_name' => e($user->first_name),
                 'last_name' => e($user->last_name),
                 'email' => e($user->email),
+                'phone' => e($user->phone),
+                'address' => e($user->address),
                 'image' => $user->image ? asset($user->image) : null,
             ]
         ], 200);

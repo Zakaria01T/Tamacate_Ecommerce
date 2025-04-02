@@ -3,7 +3,6 @@ import { API } from "../../api/api";
 
 export const fetchCategories = createAsyncThunk("categories/index", async () => {
   const { data } = await API.get("/categories");
-  //console.log("Fetched categories:", data);
 
   return data;
 });
@@ -49,8 +48,9 @@ const categorySlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.items = action.payload;
+      state.status = "succeeded";
+      // Ensure we always store an array, even if payload is empty
+      state.items = action.payload.data || [];
       })
       .addCase(fetchCategories.rejected, (state, action) => {
         state.status = "failed";

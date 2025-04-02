@@ -11,11 +11,14 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        $cateogry = Category::all();
-        if ($cateogry->isEmpty()) {
-            return response()->json(['message' => "no category existe"], 200);
-        }
-        return response()->json($cateogry, 200);
+        $categories = Category::all();
+        return response()->json([
+            'success' => true,
+            'data' => $categories,
+            'message' => $categories->isEmpty()
+                ? 'No categories exist'
+                : 'Categories retrieved successfully'
+        ], 200);
     }
 
     public function store(Request $request)

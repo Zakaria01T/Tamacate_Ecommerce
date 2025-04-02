@@ -59,17 +59,40 @@ export const updateOrder = createAsyncThunk(
         }
     }
 );
-
 export const cancelOrder = createAsyncThunk(
-    'orders/cancelOrder',
-    async (orderId, { rejectWithValue }) => {
-        try {
-            const response = await API.delete(`/orders/${orderId}`);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
+  "orders/cancelOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/cancelOrder/${orderId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
     }
+  }
+);
+
+export const cancelOrderClient = createAsyncThunk(
+  "orders/cancelOrderClient",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/uncomplete_order/${orderId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+export const fetchOrderByIdForClient = createAsyncThunk(
+  "orders/fetchOrderByIdForClient",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/client_order/${orderId}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
 );
 
 // Order slice
@@ -112,6 +135,9 @@ const orderSlice = createSlice({
                 state.error = action.payload;
             })
             // Fetch order by ID
+            .addCase(fetchOrderById.pending, (state) => {
+                state.status = 'loading';
+            })
             .addCase(fetchOrderById.fulfilled, (state, action) => {
                 state.status = 'succeeded';
                 state.currentOrder = action.payload.data;

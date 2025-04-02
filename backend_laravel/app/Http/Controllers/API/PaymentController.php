@@ -100,7 +100,7 @@ class PaymentController extends Controller
         }
 
         return response()->json([
-            "status" => "failed",
+            "status" => "cancelled",
             "message" => "Payment Failed.",
 
         ], 400);
@@ -114,7 +114,7 @@ class PaymentController extends Controller
     }
     public function makeOrderFromPaypal(Request $request)
     {
-        if ($request->status == "failed") {
+        if ($request->status == "cancelled") {
             return response()->json([
                 "status" => "failed",
                 "message" => "You have trouble paying for the order.",
@@ -154,7 +154,8 @@ class PaymentController extends Controller
         $order->user_id = Auth()->user()->id;
 
         $total = 0;
-
+        $order->payment_method = "paypal";
+        $order->status_payment = "paid";
         foreach ($pannieritems as $prod) {
             $total += $prod['price'] * $prod['pivot']['quantity'];
         }

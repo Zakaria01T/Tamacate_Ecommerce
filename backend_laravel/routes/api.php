@@ -57,9 +57,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('payment_COD', [PaymentController::class, 'makeOrder']);
     Route::get('payment_paypal', [PaymentController::class, 'payment']);
-    Route::get('payment_success', [PaymentController::class, 'success'])->name('payment_success');
-    Route::get('payment_cancel', [PaymentController::class, 'cancel'])->name("payment_cancel");
+    Route::post('confirm_order_from_paypal', [PaymentController::class, 'makeOrderFromPaypal']);
 });
+Route::get('payment_success', [PaymentController::class, 'success'])->name('payment_success');
+Route::get('payment_cancel', [PaymentController::class, 'cancel'])->name("payment_cancel");
 
 //client Order
 Route::middleware('auth:sanctum')->group(function () {

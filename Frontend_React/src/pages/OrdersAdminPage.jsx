@@ -140,7 +140,12 @@ function OrdersAdminPage() {
             sortable: true,
         },
         {
-            name: 'Status Payment',
+            name: 'Payment Method',
+            selector: (row) => <p className={`${row.payment_method === 'paypal' ? 'bg-blue-500' : 'bg-green-500'} py-2 px-4 rounded-lg text-white`}>{row.payment_method}</p>,
+            sortable: true,
+        },
+        {
+            name: 'Payment Status',
             selector: (row) => <button
                 disabled={row.status_payment === 'paid' || row.status === 'Cancelled'}
                 onClick={() => handlePay(row.id)}

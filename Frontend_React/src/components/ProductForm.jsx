@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { API } from '../api/api';
 import { createProduct, updateProduct } from '../redux/features/productSlice';
 import LoadingSpinner from './LoadingSpinner';
@@ -10,6 +10,7 @@ export default function ProductForm() {
   const location = useLocation();
   const initialValues = location.state?.product || null;
   const [isEditing, setIsEditing] = useState(false);
+  const { error } = useSelector((state) => state.products)
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -79,6 +80,15 @@ export default function ProductForm() {
       } else {
         dispatch(createProduct(formData));
       }
+      if (error) {
+
+        Swal.fire({
+          icon: 'error',
+          title: error,
+          text: 'Please try again.',
+        });
+      }
+
 
       Swal.fire({
         icon: 'success',
@@ -87,7 +97,7 @@ export default function ProductForm() {
         timer: 1500,
       });
 
-      navigate(-1);
+      navigate('/admin/products');
     } catch (error) {
       Swal.fire({
         icon: 'error',

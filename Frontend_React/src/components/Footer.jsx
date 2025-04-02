@@ -14,7 +14,7 @@ const Footer = () => {
 
 
             <div className="text-gray-600 text-sm">
-                © 1999-2025 YourCompany.com. All Rights Reserved: Your Company Name · Business License: Your License Number · Cybersecurity · Messenger · Your ID
+                © 1888-2025 Tamacat.com. All Rights Reserved: TAMACAT · Business License: 34G34GRG35 · Cybersecurity · Messenger · 00000000
             </div>
         </footer>
     );

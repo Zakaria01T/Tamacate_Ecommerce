@@ -11,7 +11,6 @@ import Swal from 'sweetalert2';
 export default function CheckoutPage() {
     const dispatch = useDispatch();
     const { total, items } = useSelector((state) => state.cart);
-    const { url } = useSelector((state) => state.orders);
     const [moreItems, setMoreItems] = useState(false);
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState('COD')
@@ -44,13 +43,19 @@ export default function CheckoutPage() {
 
         const resultAction = await dispatch(createOrder(paymentMethod));
 
-        Swal.close();
+
 
         if (createOrder.fulfilled.match(resultAction)) {
-            const { approval_url } = resultAction.payload;
-            const { status, message } = resultAction.payload;
+            Swal.close();
+            const { status, message, approval_url } = resultAction.payload;
+
+            // Redirect to PayPal approval URL if available
+            if (approval_url) {
+                window.location.href = approval_url;
+            }
+
             // Check if the order was created successfully
-            if (status === "success") {
+            else if (status === "success") {
                 Swal.fire({
                     title: 'Success',
                     text: message,
@@ -68,10 +73,6 @@ export default function CheckoutPage() {
                     timer: 1500
                 });
             }
-            // Redirect to PayPal approval URL if available
-            if (approval_url) {
-                window.location.href = approval_url;
-            }
         } else if (createOrder.rejected.match(resultAction)) {
             Swal.fire({
                 title: 'Error',
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
 
 
     return (
-        <div className="container mx-auto p-4 max-w-4xl" >
+        <div className=" mx-auto p-4 max-w-4xl" >
             <h1 className="text-3xl font-bold mb-6">Checkout</h1>
             <div className="flex flex-col md:flex-row justify-between items-start gap-4" >
                 <div className="w-full md:w-2/3">

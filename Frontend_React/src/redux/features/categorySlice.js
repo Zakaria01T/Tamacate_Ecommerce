@@ -3,7 +3,6 @@ import { API } from "../../api/api";
 
 export const fetchCategories = createAsyncThunk("categories/index", async () => {
   const { data } = await API.get("/categories");
-  //console.log("Fetched categories:", data);
 
   return data;
 });
@@ -28,7 +27,7 @@ export const deleteCategory = createAsyncThunk(
   "categories/delete",
   async (id) => {
     await API.delete(`/categories/${id}`);
-    return id; 
+    return id;
   }
 );
 

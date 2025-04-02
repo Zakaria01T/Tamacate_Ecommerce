@@ -26,11 +26,13 @@ export default function CartPage() {
         }).then((result) => {
             if (result.isConfirmed) {
                 dispatch(clearCartFromServer())
-                Swal.fire(
-                    'Cleared!',
-                    'Your cart has been cleared.',
-                    'success'
-                )
+                Swal.fire({
+                    title: 'Cleared!',
+                    text: 'Your cart has been cleared.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
         })
     }
@@ -47,11 +49,13 @@ export default function CartPage() {
         }).then((result) => {
             if (result.isConfirmed) {
                 dispatch(removeFromCart(id))
-                Swal.fire(
-                    'Removed!',
-                    'The item has been removed from your cart.',
-                    'success'
-                )
+                Swal.fire({
+                    title: 'Removed!',
+                    text: 'The item has been removed from your cart.',
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
             }
         })
     }

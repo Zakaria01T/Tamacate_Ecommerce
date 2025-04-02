@@ -49,8 +49,8 @@ const ProductsPage = () => {
 
 
   // Filter products based on search text
-  const filteredItems = items.filter((item) => {
-    const matchesText = item.name.toLowerCase().includes(filterText.toLowerCase())
+  const filteredItems = items?.filter((item) => {
+    const matchesText = item.name.toLowerCase().includes(filterText?.toLowerCase())
       || (item.price.toString().includes(filterText))
       || (item.stock.toString().includes(filterText));
 
@@ -157,7 +157,7 @@ const ProductsPage = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Products</h1>
+        <h1 className="text-3xl font-bold border-b-4 border-green-400 w-fit">Products</h1>
         <Link
           to="/admin/product"
           className="bg-green-600 hover:bg-green-400 text-white px-4 py-2 rounded-lg flex items-center gap-1"

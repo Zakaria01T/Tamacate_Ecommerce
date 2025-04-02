@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   }, []);
 
   return (
-    <div className="w-[95%] mx-auto mt-2">
+    <div className="w-[95%]  m-auto mt-2">
       <div>
         <Statistics
           ordersData={ordersData}

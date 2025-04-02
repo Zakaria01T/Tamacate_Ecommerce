@@ -20,12 +20,13 @@ export default function HomePage() {
     }, [])
 
     const filteredItems = items.length > 0 ? items.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.category_id === Number(searchTerm)
     ) : []
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-3xl font-bold mb-6">Products</h1>
+            <h1 className="text-3xl font-bold mb-6 border-b-4 border-green-400 w-fit">Products</h1>
             <SearchBar />
 
             {status === 'loading' ? (

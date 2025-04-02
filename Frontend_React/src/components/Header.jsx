@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown } from 'react-icons/hi';
+import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocument, HiDocumentText } from 'react-icons/hi';
 import { useState } from 'react';
 import { logout } from '../redux/features/authSlice';
 
@@ -69,18 +69,20 @@ export default function Header() {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="flex justify-start items-center gap-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
                       onClick={() => setIsProfileOpen(false)}
                     >
+                      <HiUser />
                       My Profile
                     </Link>
                     {
                       userInfo?.isAdmin === 0 && (
                         <Link
                           to="/orders"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                          className="flex justify-start items-center gap-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
                           onClick={() => setIsProfileOpen(false)}
                         >
+                          <HiDocumentText />
                           My Orders
                         </Link>
                       )
@@ -90,7 +92,7 @@ export default function Header() {
                         dispatch(logout());
                         setIsProfileOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                      className="flex justify-start gap-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 "
                     >
                       <HiLogout />
                       Logout

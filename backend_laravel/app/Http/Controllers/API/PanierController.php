@@ -19,7 +19,7 @@ class PanierController extends Controller
         $panier = Panier::where('user_id', $userId)->with('products')->first();
 
         if (!$panier) {
-            return response()->json(['error' => 'Cart not found'], 404);
+            return response()->json(['message' => 'Your cartis empty'], 201);
         }
         $products = $panier->products;
 

@@ -30,7 +30,7 @@ class ProductController extends Controller
         ]);
 
         if ($validate->fails()) {
-            return response()->json(['errors' => $validate->errors()], 400);
+            return response()->json(['error' => $validate->errors()], 400);
         }
         //to save the image
         $filename = 'default.jpg';

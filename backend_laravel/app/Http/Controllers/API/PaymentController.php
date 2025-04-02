@@ -93,17 +93,12 @@ class PaymentController extends Controller
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request->query('token'));
         if (isset($response["status"]) && $response["status"] == "COMPLETED") {
-            return response()->json([
-                "status" => "success",
-                "message" => "Payment successful.",
-            ]);
+            $this->makeOrderFromPaypal("success");
+            return redirect(env('APP_URL') . ':3000/orders?success=true');
         }
+        $this->makeOrderFromPaypal("cancelled");
 
-        return response()->json([
-            "status" => "cancelled",
-            "message" => "Payment Failed.",
-
-        ], 400);
+        return redirect(env('APP_URL') . ':3000/orders?success=false')->with('error', 'Payment failed. Please try again.');
     }
     public function cancel()
     {
@@ -112,15 +107,15 @@ class PaymentController extends Controller
             "message" => "The payment was canceled by the user.",
         ]);
     }
-    public function makeOrderFromPaypal(Request $request)
+    public function makeOrderFromPaypal($status)
     {
-        if ($request->status == "cancelled") {
+        if ($status == "cancelled") {
             return response()->json([
-                "status" => "failed",
+                "status" => "cancelled",
                 "message" => "You have trouble paying for the order.",
             ], 500);
         }
-        $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
+        $pannier = Panier::where('user_id', 2)->with("products")->first();
 
         if (!$pannier) {
             return response()->json([
@@ -151,7 +146,7 @@ class PaymentController extends Controller
         }
 
         $order = new Order();
-        $order->user_id = Auth()->user()->id;
+        $order->user_id = 2;
 
         $total = 0;
         $order->payment_method = "paypal";
@@ -250,7 +245,7 @@ class PaymentController extends Controller
         $pannier->delete(); // Delete the panier
 
         return response()->json(data: [
-            'status' => 'Successed',
+            'status' => 'success',
             'message' => 'Your order was added successfully.',
         ]);
     }

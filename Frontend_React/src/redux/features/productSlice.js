@@ -21,7 +21,7 @@ export const createProduct = createAsyncThunk('products/create', async (productD
     });
     return data;
   } catch (error) {
-    return rejectWithValue(error.response?.data || error.message);
+    return rejectWithValue(error.response?.error || error.message);
   }
 });
 
@@ -82,8 +82,16 @@ const productSlice = createSlice({
         state.status = 'failed';
         state.error = action.payload || action.error.message;
       })
+      .addCase(createProduct.pending, (state) => {
+        state.status = 'loading';
+      }
+      )
       .addCase(createProduct.fulfilled, (state, action) => {
         state.items.push(action.payload);
+      })
+      .addCase(createProduct.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload || action.error.message;
       })
       .addCase(updateProduct.fulfilled, (state, action) => {
         const index = state.items.findIndex((item) => item.id === action.payload.id);

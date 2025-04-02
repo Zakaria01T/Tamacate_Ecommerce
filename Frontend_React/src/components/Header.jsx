@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocumentText } from 'react-icons/hi';
-import { logoutUser } from '../redux/features/authSlice';
+import { logout } from '../redux/features/authSlice';
 import { useState } from 'react';
 
 export default function Header() {
@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <nav className="container mx-auto p-4 flex justify-between items-center">
-        <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-blue-600">
+        <Link to={userInfo?.isAdmin ? '/dashboard' : '/'} className="text-2xl font-bold text-green-600">
           TAMACAT.com
         </Link>
 
@@ -37,10 +37,6 @@ export default function Header() {
                 <>
                   <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
                     Dashboard
-                  </Link>
-
-                  <Link to="/admin/categories" className="text-gray-600 hover:text-blue-600">
-                    Categories
                   </Link>
                   <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
                     Products

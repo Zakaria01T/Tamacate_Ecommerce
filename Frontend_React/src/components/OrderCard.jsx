@@ -25,7 +25,7 @@ const OrderCard = () => {
                         <p className="text-xl font-semibold text-black-800">{currentOrder[0].order_id}</p>
                     </div>
                     <HiX
-                        className="text-3xl text-gray-600 cursor-pointer hover:text-red-500"
+                        className="text-3xl text-white  bg-red-500 p-1 rounded-lg cursor-pointer hover:bg-red-400"
                         onClick={() => dispatch(clearCurrentOrder())}
                     />
                 </div>
@@ -59,8 +59,8 @@ const OrderCard = () => {
                         </div>
                     ))}
                 </div>
-                <div className="mt-6 border-t pt-4 flex justify-end items-center">
-                    <p className="text-lg  font-semibold text-black-800">
+                <div className="mt-6 border-t pt-4 flex justify-between items-center">
+                    <p className="text-lg  font-semibold text-gray-800">
                         Total Price=
                     </p>
                     <p className="font-bold ">MAD {calculTotalPrice()}

@@ -44,9 +44,7 @@ export const deleteAccount = createAsyncThunk(
   async (password, { rejectWithValue }) => {
     try {
       const response = await API.delete('/delete-account', { data: { password } });
-      localStorage.removeItem('userInfo');
-      localStorage.removeItem('csrf_token');
-      return response.data;
+      return response.data.message;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete account');
     }
@@ -94,39 +92,9 @@ const userSlice = createSlice({
       .addCase(updateUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
-      })
-
-      // Update Password
-      .addCase(updatePassword.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(updatePassword.fulfilled, (state) => {
-        state.status = 'succeeded';
-      })
-      .addCase(updatePassword.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
-      // Delete Account
-      .addCase(deleteAccount.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(deleteAccount.fulfilled, (state) => {
-        state.status = 'idle';
-        state.user = null;
-      })
-      .addCase(deleteAccount.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
-      // Listen for logout action from authSlice
-      .addCase(logoutUser.fulfilled, (state) => {
-        state.user = null;
-        state.status = 'idle';
-        state.error = null;
       });
+
+    // Add similar cases for updatePassword and deleteAccount
   },
 });
 

@@ -59,17 +59,28 @@ export const updateOrder = createAsyncThunk(
         }
     }
 );
-
 export const cancelOrder = createAsyncThunk(
-    'orders/cancelOrder',
-    async (orderId, { rejectWithValue }) => {
-        try {
-            const response = await API.delete(`/orders/${orderId}`);
-            return response.data;
-        } catch (error) {
-            return rejectWithValue(error.response?.data || error.message);
-        }
+  "orders/cancelOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/cancelOrder/${orderId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
     }
+  }
+);
+
+export const cancelOrderClient = createAsyncThunk(
+  "orders/cancelOrderClient",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.get(`/uncomplete_order/${orderId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
 );
 
 // Order slice
@@ -143,7 +154,21 @@ const orderSlice = createSlice({
             .addCase(cancelOrder.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
-            });
+            })
+            .addCase(cancelOrderClient.pending, (state) => {
+              state.status = "loading";
+            })
+            .addCase(cancelOrderClient.fulfilled, (state, action) => {
+              state.status = "succeeded";
+              state.orders = state.orders.filter(
+                (order) => order.id !== action.meta.arg
+              );
+            })
+            .addCase(cancelOrderClient.rejected, (state, action) => {
+              state.status = "failed";
+              state.error = action.payload;
+            })
+          
     },
 });
 

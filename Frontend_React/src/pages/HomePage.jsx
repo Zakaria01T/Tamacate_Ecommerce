@@ -7,16 +7,16 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { fetchCart } from '../redux/features/cartSlice';
 
 export default function HomePage() {
-  const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.auth);
-  const { items, status, searchTerm } = useSelector((state) => state.products);
+    const dispatch = useDispatch()
+    const { userInfo } = useSelector((state) => state.auth)
+    const { items, status, searchTerm } = useSelector((state) => state.products)
 
-  useEffect(() => {
-    dispatch(fetchProducts());
-    if (userInfo) {
-      dispatch(fetchCart());
-    }
-  }, [dispatch]);
+    useEffect(() => {
+        dispatch(fetchProducts())
+        if (userInfo) {
+            dispatch(fetchCart())
+        }
+    }, [dispatch])
 
   const filteredItems = items.length > 0 ? items.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase())) : [];
 

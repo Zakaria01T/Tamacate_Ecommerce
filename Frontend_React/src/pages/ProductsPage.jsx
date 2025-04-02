@@ -11,8 +11,6 @@ const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [toggleCleared, setToggleCleared] = useState(false);
   const dispatch = useDispatch();
   const { items, status } = useSelector((state) => state.products);
 
@@ -31,30 +29,30 @@ const ProductsPage = () => {
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      dispatch(deleteProduct(id));
-    }
-  };
-
-  const handleRowSelected = (state) => {
-    setSelectedRows(state.selectedRows);
-  };
-
-  const handleBulkDelete = () => {
-    if (window.confirm(`Are you sure you want to delete ${selectedRows.length} products?`)) {
-      selectedRows.forEach((row) => {
-        dispatch(deleteProduct(row.id));
+    import('sweetalert2').then((Swal) => {
+      Swal.default.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this product!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          dispatch(deleteProduct(id));
+          Swal.default.fire('Deleted!', 'The product has been deleted.', 'success');
+        }
       });
-      setToggleCleared(!toggleCleared);
-      setSelectedRows([]);
-    }
+    });
   };
+
 
   // Filter products based on search text
   const filteredItems = items.filter((item) => {
     const matchesText = item.name.toLowerCase().includes(filterText.toLowerCase())
-            || (item.price.toString().includes(filterText))
-            || (item.stock.toString().includes(filterText));
+      || (item.price.toString().includes(filterText))
+      || (item.stock.toString().includes(filterText));
 
     const category = categories.find((cat) => cat.id === item.category_id);
     const matchesCategory = category
@@ -93,19 +91,19 @@ const ProductsPage = () => {
 
   const columns = [
     {
-        name: 'Image',
-        selector: (row) => row.image,
-        cell: (row) => {
-          return (
-            <img
+      name: 'Image',
+      selector: (row) => row.image,
+      cell: (row) => {
+        return (
+          <img
             src={`http://localhost:8000/images/products/${row.image}`}
-              alt={row.name}
-              className="w-16 h-16 object-cover rounded-md"
-            />
-          );
-        },
-        width: '100px',
+            alt={row.name}
+            className="w-16 h-16 object-cover rounded-md"
+          />
+        );
       },
+      width: '100px',
+    },
     {
       name: 'Name',
       selector: (row) => row.name,
@@ -153,18 +151,8 @@ const ProductsPage = () => {
       width: '120px',
     },
   ];
-  
 
-  const contextActions = (
-    <button
-      key="delete"
-      onClick={handleBulkDelete}
-      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center"
-    >
-      <HiTrash className="mr-1" />
-      Delete {selectedRows.length} selected
-    </button>
-  );
+
 
   return (
     <div className="container mx-auto p-4">
@@ -182,10 +170,6 @@ const ProductsPage = () => {
       <DataTable
         columns={columns}
         data={filteredItems}
-        selectableRows
-        onSelectedRowsChange={handleRowSelected}
-        clearSelectedRows={toggleCleared}
-        contextActions={contextActions}
         fixedHeader
         pagination
         paginationResetDefaultPage={resetPaginationToggle}

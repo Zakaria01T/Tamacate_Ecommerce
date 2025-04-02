@@ -48,6 +48,27 @@ export default function CheckoutPage() {
 
         if (createOrder.fulfilled.match(resultAction)) {
             const { approval_url } = resultAction.payload;
+            const { status, message } = resultAction.payload;
+            // Check if the order was created successfully
+            if (status === "success") {
+                Swal.fire({
+                    title: 'Success',
+                    text: message,
+                    icon: 'success',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                navigate('/orders')
+            } else {
+                Swal.fire({
+                    title: 'Error',
+                    text: message,
+                    icon: 'error',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+            // Redirect to PayPal approval URL if available
             if (approval_url) {
                 window.location.href = approval_url;
             }

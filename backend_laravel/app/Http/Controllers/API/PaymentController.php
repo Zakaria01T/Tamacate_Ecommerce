@@ -143,6 +143,7 @@ class PaymentController extends Controller
         $order->user_id = $userId;
 
         $total = 0;
+        $order->order_number = "ORD" .  rand(1111, 9999);
         $order->payment_method = "paypal";
         $order->status_payment = "paid";
         $order->status = 1;
@@ -215,6 +216,10 @@ class PaymentController extends Controller
 
         $order = new Order();
         $order->user_id = Auth()->user()->id;
+        $order->order_number = "ORD" .  rand(1111, 9999);
+        $order->payment_method = "cash";
+        $order->status_payment = "unpaid";
+        $order->status = 0; // 0:pending, 1:Confirmed, 2:Cancelled
 
         $total = 0;
 

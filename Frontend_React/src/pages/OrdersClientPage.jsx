@@ -97,8 +97,8 @@ function OrdersClientPage() {
 
   const columns = [
     {
-      name: 'Order ID',
-      selector: (row) => row.id,
+      name: 'Order Number',
+      selector: (row) => row.order_number,
       sortable: true,
     },
     {

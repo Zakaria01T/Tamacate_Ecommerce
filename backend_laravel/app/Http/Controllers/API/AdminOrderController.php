@@ -32,7 +32,12 @@ class AdminOrderController extends Controller
     }
     public function vieworder($id)
     {
+        $order = Order::where('id', $id)->first();
+        $order_number=$order->order_number;
         $orderItems = OrderItem::where('order_id', $id)->with('product')->get();
+        foreach ($orderItems as $item) {
+            $item->order_number = $order_number;
+        }
 
         return response()->json(['data' => $orderItems]);
     }

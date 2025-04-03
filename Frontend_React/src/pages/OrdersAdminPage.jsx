@@ -120,8 +120,8 @@ function OrdersAdminPage() {
 
     const columns = [
         {
-            name: 'Order ID',
-            selector: (row) => row.id,
+            name: 'Order Number',
+            selector: (row) => row.order_number,
             sortable: true,
         },
         {
@@ -129,7 +129,6 @@ function OrdersAdminPage() {
             selector: (row) => row.user_id,
             sortable: true,
         },
-
         {
             name: 'Total Price',
             sortable: true,

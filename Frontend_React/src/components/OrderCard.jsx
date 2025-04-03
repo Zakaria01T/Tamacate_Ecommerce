@@ -8,6 +8,7 @@ const OrderCard = () => {
 
     const calculTotalPrice = () => {
         let total = 0;
+        // console.log(currentOrder);
         currentOrder.map((item) => {
             total += item.product.price * item.quantity;
         });
@@ -22,7 +23,7 @@ const OrderCard = () => {
                         <h2 className="text-2xl font-bold text-gray-800">
                             Order ID:
                         </h2>
-                        <p className="text-xl font-semibold text-black-800">{currentOrder[0].order_id}</p>
+              <p className="text-xl font-semibold text-black-800">{currentOrder[0].order_number}</p>
                     </div>
                     <HiX
                         className="text-3xl text-white  bg-red-500 p-1 rounded-lg cursor-pointer hover:bg-red-400"

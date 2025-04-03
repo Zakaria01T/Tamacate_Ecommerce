@@ -3,40 +3,33 @@ import Chart from 'chart.js/auto';
 
 const timePeriods = ['1 Jour', '3 Mois', '6 Mois', '1 An'];
 
-function Turnover({ salesData }) {
+function Turnover({ salesData, productData }) {
   const chartRef = useRef(null);
   const chartInstance = useRef(null);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState(timePeriods[0]);
+  const [totalSalesValue, setTotalSalesValue] = useState(0);
   const [bestSellingItems, setBestSellingItems] = useState([]);
   const [topSellingArticles, setTopSellingArticles] = useState([]);
-  const [totalSalesValue, setTotalSalesValue] = useState(0);
 
   useEffect(() => {
     if (salesData.length) {
-      const processedData = processSalesData(salesData);
-      setBestSellingItems(getBestSellingItems(processedData));
-      setTopSellingArticles(getTopSellingArticles(processedData));
-      setTotalSalesValue(processedData.reduce((total, sale) => total + sale.total, 0));
-      renderChart(selectedTimePeriod, processedData);
+      console.log(productData);
+      setTotalSalesValue(salesData.reduce((total, sale) => total + sale.total_price, 0));
+      setBestSellingItems(getBestSellingItems(salesData));
+      setTopSellingArticles(getTopSellingArticles(salesData));
+      renderChart(selectedTimePeriod, salesData);
     }
   }, [selectedTimePeriod, salesData]);
 
-  const processSalesData = (sales) => sales.map((sale) => ({
-    ...sale,
-    total: sale.unit_price * sale.quantity,
-    date: new Date(sale.created_at),
-  }));
-
   const renderChart = (timePeriod, data) => {
     chartInstance.current?.destroy();
-
     const ctx = chartRef.current.getContext('2d');
     chartInstance.current = new Chart(ctx, {
       type: 'line',
       data: {
         labels: getLabelsForTimePeriod(timePeriod),
         datasets: [{
-          label: 'Nombre de ventes',
+          label: "Chiffre d'affaires",
           data: getDataForTimePeriod(timePeriod, data),
           borderColor: 'rgb(10,225,70)',
           tension: 0.1,
@@ -53,7 +46,7 @@ function Turnover({ salesData }) {
   const getLabelsForTimePeriod = (period) => {
     const labelsMap = {
       '1 Jour': ['0-3h', '3-6h', '6-9h', '9-12h', '12-15h', '15-18h', '18-21h', '21-24h'],
-      '3 Mois': ['Jan', 'Fév', 'Mar'],
+      '3 Mois': ['Avr', 'Mai', 'Juin'],
       '6 Mois': ['Jan', 'Avr', 'Juil'],
       '1 An': ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
     };
@@ -65,29 +58,38 @@ function Turnover({ salesData }) {
 
     switch (period) {
       case '1 Jour':
-        return aggregateData(data, 8, (sale, i) => Math.floor(sale.date.getHours() / 3) === i);
+        return aggregateData(data, 8, (sale, i) => Math.floor(new Date(sale.created_at).getHours() / 3) === i);
       case '3 Mois':
-        return aggregateData(data, 3, (sale, i) => sale.date.getFullYear() === currentYear && sale.date.getMonth() === i);
+        return aggregateData(data, 3, (sale, i) => new Date(sale.created_at).getFullYear() === currentYear && new Date(sale.created_at).getMonth() === i + 3);
       case '6 Mois':
-        return aggregateData(data, 6, (sale, i) => sale.date.getFullYear() === currentYear && [0, 3, 6, 9].includes(sale.date.getMonth()));
+        return aggregateData(data, 6, (sale, i) => new Date(sale.created_at).getFullYear() === currentYear && [0, 3, 6, 9].includes(new Date(sale.created_at).getMonth()));
       case '1 An':
-        return aggregateData(data, 12, (sale, i) => sale.date.getFullYear() === currentYear && sale.date.getMonth() === i);
+        return aggregateData(data, 12, (sale, i) => new Date(sale.created_at).getFullYear() === currentYear && new Date(sale.created_at).getMonth() === i);
       default:
         return [];
     }
   };
 
-  const aggregateData = (data, size, condition) => Array(size).fill(0).map((_, i) => data.filter((sale) => condition(sale, i)).length);
+  const aggregateData = (data, size, condition) => Array(size).fill(0).map((_, i) => data.filter((sale) => condition(sale, i)).reduce((sum, sale) => sum + sale.total_price, 0));
 
   const getBestSellingItems = (data) => [...data]
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 8);
+    .sort((a, b) => b.total_price - a.total_price)
+    .slice(0, 8)
+    .map((sale) => ({
+      article: `Order #${sale.id}`,
+      total: sale.total_price,
+    }));
 
   const getTopSellingArticles = (data) => {
-    const articleMap = data.reduce((acc, sale) => {
-      acc[sale.article] = (acc[sale.article] || 0) + sale.quantity;
-      return acc;
-    }, {});
+    // This assumes your salesData has article information
+    // If not, you'll need to modify this to match your data structure
+    const articleMap = {};
+
+    data.forEach((sale) => {
+      // Modify this line based on how articles are stored in your data
+      const articleName = sale.article || `Article ${sale.id}`;
+      articleMap[articleName] = (articleMap[articleName] || 0) + 1;
+    });
 
     return Object.entries(articleMap)
       .sort((a, b) => b[1] - a[1])
@@ -101,10 +103,9 @@ function Turnover({ salesData }) {
         {/* Main Chart */}
         <div className="w-[55%] bg-white p-2.5 m-5 rounded-lg shadow-md">
           <div className="flex items-center border-b-2 border-gray-300 pb-2">
-            <h3 className="text-lg font-semibold">Ventes</h3>
+            <h3 className="text-lg font-semibold">Turnover</h3>
             <div className="ml-auto font-bold">{totalSalesValue.toFixed(2)}$</div>
           </div>
-
           <div className="mt-2.5 mb-2.5">
             <ul className="flex justify-around list-none">
               {timePeriods.map((period) => (
@@ -120,7 +121,6 @@ function Turnover({ salesData }) {
               ))}
             </ul>
           </div>
-
           <div className="graph">
             <canvas ref={chartRef} height={220} width={600} />
           </div>
@@ -128,7 +128,7 @@ function Turnover({ salesData }) {
 
         {/* Best Selling Items */}
         <div className="w-[20%] bg-white p-2.5 m-5 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold">Meilleures Ventes</h3>
+          <h3 className="text-lg font-semibold">Best Sellers</h3>
           <ul className="mt-2.5">
             {bestSellingItems.map((item, index) => (
               <li key={index} className="flex justify-between text-gray-600 mt-2.5">
@@ -140,13 +140,19 @@ function Turnover({ salesData }) {
 
         {/* Top Selling Articles */}
         <div className="w-[20%] bg-white p-2.5 m-5 rounded-lg shadow-md">
-          <h3 className="text-lg font-semibold">Articles les plus vendus</h3>
+          <h3 className="text-lg font-semibold">Low Stock</h3>
           <ul className="mt-2.5">
-            {topSellingArticles.map((item, index) => (
-              <li key={index} className="flex justify-between text-gray-600 mt-2.5">
-                {item.article} <span className="font-bold ml-10">{item.quantity}</span>
-              </li>
-            ))}
+            {productData.filter((item) => item.stock < 20).length > 0 ? (
+              productData.map((item, index) => (
+                item.stock < 20 && (
+                <li key={index} className="flex justify-between text-red-600 mt-2.5">
+                  {item.name.length > 20 ? `${item.name.slice(0, 15)}...` : item.name} <span className="font-bold ml-10">{item.stock}</span>
+                </li>
+                )
+              ))
+            ) : (
+              <p className="pr-5">No products are near to out of stock</p>
+            )}
           </ul>
         </div>
       </div>

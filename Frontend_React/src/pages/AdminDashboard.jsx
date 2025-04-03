@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import Turnover from '../components/Turnover';
 import Statistics from '../components/Statistics';
 import { fetchProducts } from '../redux/features/productSlice';
+import { fetchOrders } from '../redux/features/orderSlice';
 import { API } from '../api/api';
 
 const AdminDashboard = () => {
@@ -15,8 +15,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchOrdersData = async () => {
       try {
-        const response = await API.get('/admin_order');
-        setOrdersData(response.data.orders || []);
+        const response = await dispatch(fetchOrders('admin'));
+        setOrdersData(response.payload.data || []);
       } catch (error) {
         console.error('Error fetching orders data:', error);
       }
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
           productsData={productsData}
           clientsData={clientsData}
         />
-        <Turnover salesData={productsData} />
+        <Turnover salesData={ordersData} productData={productsData} />
       </div>
     </div>
   );

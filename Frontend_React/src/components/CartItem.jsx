@@ -8,7 +8,7 @@ export default function CartItem({ item, onRemove }) {
       {/* Image et informations */}
       <div className="flex items-center space-x-4 flex-1">
         <img
-          src={`http://localhost:8000/images/products/${item.image}`}
+          src={`http://localhost:8000/images/products/${item.image ? item.image : 'default.jpg'}`}
           alt={item.name}
           className="w-20 h-20 object-cover rounded-lg"
         />

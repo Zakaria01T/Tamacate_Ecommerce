@@ -154,7 +154,7 @@ export default function CheckoutPage() {
 
                             {items.map((item, index) => (
                                 <div key={index} className="flex flex-col justify-between items-center mb-2">
-                                    <img className='w-24' src={`http://localhost:8000/images/products/${item.image}`} />
+                                <img className='w-24' src={`http://localhost:8000/images/products/${item.image ? item.image : 'default.jpg'}`} />
                                     <p className='font-bold'>
                                         MAD{item.price}
                                     </p>
@@ -218,7 +218,7 @@ export default function CheckoutPage() {
                     <div className='flex flex-col gap-4 '>
                         {items.map((item, index) => (
                             <div key={index} className="flex items-center gap-4 border-b-2 pb-2 ">
-                                <img className='w-16' src={`http://localhost:8000/images/products/${item.image}`} />
+                            <img className='w-16' src={`http://localhost:8000/images/products/${item.image ? item.image : 'default.jpg'}`} />
                                 <div className='flex-1'>
                                     <p className='font-bold'>{item.name}</p>
                                     <p className='text-sm text-gray-500'>{item.description}</p>

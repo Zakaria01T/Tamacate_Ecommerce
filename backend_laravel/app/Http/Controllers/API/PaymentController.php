@@ -30,7 +30,7 @@ class PaymentController extends Controller
         $NameproductOutOfStock = [];
         foreach ($pannieritems as $item) {
             $prod = Product::find($item['id']);
-            if ($prod->stock < $item["pivot"]["quantity"]) {
+            if (!$prod || $prod->stock < $item["pivot"]["quantity"]) {
                 $flag = true;
                 array_push($NameproductOutOfStock, $prod->name);
             }
@@ -55,7 +55,7 @@ class PaymentController extends Controller
         $response = $provider->createOrder([
             "intent" => "CAPTURE",
             "application_context" => [
-                "return_url" => route('payment_success', ['token' => csrf_token()]),
+                "return_url" => route('payment_success', ['id' => Auth::id()]),
                 "cancel_url" => route('payment_cancel'),
             ],
             "purchase_units" => [
@@ -93,32 +93,23 @@ class PaymentController extends Controller
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($request->query('token'));
         if (isset($response["status"]) && $response["status"] == "COMPLETED") {
-            $this->makeOrderFromPaypal("success");
-            return redirect(env('APP_URL') . ':3000/orders?success=true');
+            $this->makeOrderFromPaypal("success", $request->query('id'));
+            return redirect(env('APP_URL') . ':3000/orders');
         }
+        $this->makeOrderFromPaypal("cancelled");
 
-        return response()->json([
-            "status" => "cancelled",
-            "message" => "Payment Failed.",
-
-        ], 400);
+        return redirect(env('APP_URL') . ':3000/orders?payment=success')->with('error', 'Payment failed. Please try again.');
     }
     public function cancel()
     {
-        return response()->json([
-            "status" => "cancelled",
-            "message" => "The payment was canceled by the user.",
-        ]);
+        return redirect(env('APP_URL') . ':3000/cart?payment=cancelled')->with('error', 'Payment failed. Please try again.');
     }
-    public function makeOrderFromPaypal(Request $request)
+    public function makeOrderFromPaypal($status, $userId = null)
     {
-        if ($request->status == "cancelled") {
-            return response()->json([
-                "status" => "failed",
-                "message" => "You have trouble paying for the order.",
-            ], 500);
+        if ($status == "cancelled") {
+            return redirect(env('APP_URL') . ':3000/cart?payment=cancelled')->with('error', 'Payment failed. Please try again.');
         }
-        $pannier = Panier::where('user_id', Auth::id())->with("products")->first();
+        $pannier = Panier::where('user_id', $userId)->with("products")->first();
 
         if (!$pannier) {
             return response()->json([
@@ -149,11 +140,12 @@ class PaymentController extends Controller
         }
 
         $order = new Order();
-        $order->user_id = 2;
+        $order->user_id = $userId;
 
         $total = 0;
         $order->payment_method = "paypal";
         $order->status_payment = "paid";
+        $order->status = 1;
         foreach ($pannieritems as $prod) {
             $total += $prod['price'] * $prod['pivot']['quantity'];
         }
@@ -175,7 +167,7 @@ class PaymentController extends Controller
         $pannier->products()->detach(); // Remove all related products from panier_product table
         $pannier->delete(); // Delete the panier
 
-        return response()->json(data: [
+        return response()->json([
             'status' => 'Your order was added successfully.',
         ]);
     }
@@ -248,7 +240,7 @@ class PaymentController extends Controller
         $pannier->delete(); // Delete the panier
 
         return response()->json(data: [
-            'status' => 'Successed',
+            'status' => 'success',
             'message' => 'Your order was added successfully.',
         ]);
     }

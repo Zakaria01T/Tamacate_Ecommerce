@@ -49,8 +49,7 @@ const OrderCard = () => {
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p className="text-lg font-bold text-gray-800">
-                                    MAD {item.product.price}
+                                <p className="font-bold text-gray-800 text-lg"><span className='text-sm'>MAD</span>{item.product.price}
                                 </p>
                                 <p className="text-sm text-gray-500">
                                     Quantity: {item.quantity}
@@ -63,7 +62,7 @@ const OrderCard = () => {
                     <p className="text-lg  font-semibold text-black-800">
                         Total Price:
                     </p>
-                    <p className="font-bold ">MAD {calculTotalPrice()}
+                    <p className="font-bold text-lg"><span className='text-sm'>MAD</span>{calculTotalPrice()}
                     </p>
                 </div>
             </div>

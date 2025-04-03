@@ -24,12 +24,10 @@ export const loginUser = createAsyncThunk('auth/login', async (credentials, { re
 // Action asynchrone pour la déconnexion
 export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWithValue }) => {
     try {
-        const response = await API.post('/logout'); // Appelle l'API de déconnexion protégée par Sanctum
-        localStorage.removeItem('userInfo');
-        localStorage.removeItem('csrf_token');
-        return response.data;
+        const response = await API.post('/logout');
+        return response.message;
     } catch (err) {
-        return rejectWithValue(err.response?.data?.message || 'Erreur lors de la déconnexion');
+        return rejectWithValue(err.response?.error || 'Erreur lors de la déconnexion');
     }
 });
 
@@ -42,15 +40,6 @@ const authSlice = createSlice({
             : null,
         status: 'idle',
         error: null,
-    },
-    reducers: {
-        logout: (state) => {
-            state.userInfo = null;
-            state.status = 'idle';
-            state.error = null;
-            localStorage.removeItem('userInfo');
-            localStorage.removeItem('csrf_token'); // Supprimez également le token CSRF si nécessaire
-        },
     },
     extraReducers: (builder) => {
         builder
@@ -79,6 +68,18 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.status = 'failed';
+                state.error = action.payload;
+            })
+            // Gestion de logoutUser
+            .addCase(logoutUser.pending, (state) => {
+                state.error = null;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.userInfo = null;
+                localStorage.removeItem('userInfo');
+                localStorage.removeItem('csrf_token');
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
                 state.error = action.payload;
             });
     },

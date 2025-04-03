@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { HiCheck, HiX } from 'react-icons/hi';
+import { HiCheck, HiEye, HiX } from 'react-icons/hi';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchOrderById, fetchOrders, updateOrder, updatePaymentOrder } from '../redux/features/orderSlice';
 import Swal from 'sweetalert2';
@@ -129,28 +129,46 @@ function OrdersAdminPage() {
             selector: (row) => row.user_id,
             sortable: true,
         },
+
         {
             name: 'Total Price',
-            selector: (row) => `MAD${row.total_price}`,
             sortable: true,
+            cell: (row) => (
+                <span className="text-red-600 font-bold p-1 rounded">
+                    {row.total_price}  <span className='text-xs'>MAD</span>
+                </span>
+            ),
         },
         {
             name: 'Status',
-            selector: (row) => row.status,
             sortable: true,
+            cell: (row) => (
+                <span className={`${row.status == "Pending" ? 'bg-yellow-500' : row.status == "Confirmed" ? "bg-green-600" : "bg-red-600"} font-bold p-2 text-white rounded-full`} >
+                    {row.status}
+                </span >
+            ),
+        },
+        {
+            name: 'Status Payment',
+            sortable: true,
+            cell: (row) => (
+                <button
+                    disabled={row.status_payment === 'paid' || row.status === 'Cancelled'}
+                    onClick={() => handlePay(row.id)}
+                    className={`${row.status_payment === 'unpaid' ? 'bg-red-500' : 'bg-green-500'} capitalize text-white px-4 py-2 rounded-full font-bold`}>
+                    {row.status_payment}
+                </button >
+            ),
         },
         {
             name: 'Payment Method',
-            selector: (row) => <p className={`${row.payment_method === 'paypal' ? 'bg-blue-500' : 'bg-green-500'} py-2 px-4 rounded-lg text-white`}>{row.payment_method}</p>,
             sortable: true,
-        },
-        {
-            name: 'Payment Status',
-            selector: (row) => <button
-                disabled={row.status_payment === 'paid' || row.status === 'Cancelled'}
-                onClick={() => handlePay(row.id)}
-                className={`${row.status_payment === 'unpaid' ? 'bg-red-500' : 'bg-green-500'} text-white px-4 py-2 rounded`}>{row.status_payment}</button>,
-            sortable: true,
+            cell: (row) => (
+                <span
+                    className={`${row.payment_method === 'cash' ? 'bg-green-600' : 'bg-sky-500'} capitalize text-white px-4 py-2 rounded-full font-bold`}>
+                    {row.payment_method}
+                </span >
+            ),
         },
         {
             name: 'Order Date',
@@ -168,17 +186,17 @@ function OrdersAdminPage() {
                 <button
                     onClick={() => handleShowCard(row.id)}
                     title='View Order'
-                    className="bg-blue-500 text-white px-4 py-2 rounded">View</button>
+                    className="bg-blue-500 text-white px-4 py-2 rounded-full"><HiEye /></button>
                 {(row.status_payment === 'unpaid' && row.status === 'Pending') && <button
                     title='Cancel'
                     onClick={() => handleUpdateOrder(row.id, 2)}
-                    className="bg-red-500 text-white px-4 py-2 rounded">
+                    className="bg-red-500 text-white px-4 py-2 rounded-full">
                     <HiX />
                 </button>}
                 {(row.status_payment === 'unpaid' && row.status === 'Pending') && <button
                     title='Confirm'
                     onClick={() => handleUpdateOrder(row.id, 1)}
-                    className="bg-green-500 text-white px-4 py-2 rounded"><HiCheck /></button>}
+                    className="bg-green-500 text-white px-4 py-2 rounded-full"><HiCheck /></button>}
             </div>,
             ignoreRowClick: true,
             allowOverflow: true,
@@ -189,7 +207,7 @@ function OrdersAdminPage() {
     return (
         <>
             {currentOrder && <OrderCard />}
-            <div className=' mx-auto p-4 '>
+            <div className=' mx-auto p-4 gap-y-2 flex flex-col'>
                 <h1 className='w-fit text-3xl font-bold border-b-4 border-green-600'>Orders</h1>
                 <DataTable
                     progressPending={status === 'loading'}

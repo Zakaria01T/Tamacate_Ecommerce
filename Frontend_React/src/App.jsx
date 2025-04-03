@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
-import ProductPage from './pages/ProductPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import AdminDashboard from './pages/AdminDashboard';
@@ -15,7 +14,7 @@ import ProductsPage from './pages/ProductsPage';
 import OrdersAdminPage from './pages/OrdersAdminPage';
 import OrdersClientPage from './pages/OrdersClientPage';
 import ShowCategories from './pages/ShowCategories';
-import CategoryForm from './components/CategoryForme';
+import CategoryForm from './components/CategoryForm';
 
 function App() {
   return (
@@ -25,7 +24,6 @@ function App() {
         <Route element={<Layout />}>
           {/* Routes publiques */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/product/:id" element={<ProductPage />} />
 
           {/* Routes protégées */}
           <Route element={<ProtectedRoute />}>
@@ -36,19 +34,16 @@ function App() {
           </Route>
 
 
-          {/* Routes categories */}
-          <Route element={<ProtectedRoute adminOnly={true} />}>
-            <Route path="/admin/categories" element={<ShowCategories />} />
-            <Route path="/admin/categories/create" element={<CategoryForm />} />
-            <Route path="/admin/categories/edit/:id" element={<CategoryForm />} />
-
-          </Route>
           {/* Routes admin */}
           <Route element={<ProtectedRoute adminOnly={true} />}>
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<ProductsPage />} />
             <Route path="/admin/orders" element={<OrdersAdminPage />} />
             <Route path="/admin/product" element={<ProductForm />} />
+            {/* Routes categories */}
+            <Route path="/admin/categories" element={<ShowCategories />} />
+            <Route path="/admin/categories/create" element={<CategoryForm />} />
+            <Route path="/admin/categories/edit/:id" element={<CategoryForm />} />
           </Route>
 
           {/* Routes d'authentification */}

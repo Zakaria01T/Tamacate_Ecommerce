@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocument, HiDocumentText } from 'react-icons/hi';
+import { HiLogout, HiShoppingCart, HiUserCircle, HiChevronDown, HiUser, HiDocumentText } from 'react-icons/hi';
 import { useState } from 'react';
+import { logoutUser } from '../redux/features/authSlice';
 
-export default function Header() {
+const Header = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
@@ -22,7 +23,7 @@ export default function Header() {
               <div className="relative">
                 <HiShoppingCart className="text-2xl" />
                 {items.length > 0 && (
-                  <span className="bg-blue-500 text-white text-xs px-1 rounded-full absolute -top-2 -right-2">
+                  <span className="bg-green-500 text-white text-xs px-1 rounded-full absolute -top-2 -right-2">
                     {items.length}
                   </span>
                 )}
@@ -34,17 +35,16 @@ export default function Header() {
             <div className="flex items-center gap-4 relative">
               {userInfo?.isAdmin === 1 && (
                 <>
-                  <Link to="/dashboard" className="text-gray-600 hover:text-blue-600">
+                  <Link to="/dashboard" className="text-gray-600 hover:text-green-600">
                     Dashboard
                   </Link>
-                  <Link to="/admin/categories" className="text-gray-600 hover:text-blue-600">
+                  <Link to="/admin/categories" className="text-gray-600 hover:text-green-600">
                     Categories
                   </Link>
-                  <Link to="/admin/products" className="text-gray-600 hover:text-blue-600">
+                  <Link to="/admin/products" className="text-gray-600 hover:text-green-600">
                     Products
                   </Link>
-
-                  <Link to="/admin/orders" className="text-gray-600 hover:text-blue-600">
+                  <Link to="/admin/orders" className="text-gray-600 hover:text-green-600">
                     Orders
                   </Link>
                 </>
@@ -54,18 +54,18 @@ export default function Header() {
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="flex items-center gap-1 text-gray-600 hover:text-blue-600"
+                  className="flex items-center gap-1 text-gray-600 hover:text-green-600"
                 >
                   {userInfo.image ? (
                     <img
-                      src={userInfo.image}
+                      src={`http://localhost:8000/${userInfo.image}`}
                       alt="Profile"
                       className="w-8 h-8 rounded-full object-cover"
                     />
                   ) : (
                     <HiUserCircle className="text-2xl" />
                   )}
-                  <HiChevronDown className={`transition - transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                  <HiChevronDown className={`transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {isProfileOpen && (
@@ -78,24 +78,22 @@ export default function Header() {
                       <HiUser />
                       My Profile
                     </Link>
-                    {
-                      userInfo?.isAdmin === 0 && (
-                        <Link
-                          to="/orders"
-                          className="flex justify-start items-center gap-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
-                          onClick={() => setIsProfileOpen(false)}
-                        >
-                          <HiDocumentText />
-                          My Orders
-                        </Link>
-                      )
-                    }
+                    {userInfo?.isAdmin === 0 && (
+                      <Link
+                        to="/orders"
+                        className="flex justify-start items-center gap-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
+                        onClick={() => setIsProfileOpen(false)}
+                      >
+                        <HiDocumentText />
+                        My Orders
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         dispatch(logoutUser());
                         setIsProfileOpen(false);
                       }}
-                      className="flex justify-start gap-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 "
+                      className="flex justify-start gap-x-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-200"
                     >
                       <HiLogout />
                       Logout
@@ -113,4 +111,6 @@ export default function Header() {
       </nav>
     </header>
   );
-}
+};
+
+export default Header;

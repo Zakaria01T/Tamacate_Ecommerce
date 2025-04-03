@@ -9,7 +9,7 @@ import Swal from 'sweetalert2';
 
 export default function ShowCategories() {
   const dispatch = useDispatch();
-  
+
   const { items: categories = [], status = 'idle', error = null } = useSelector(
     (state) => state.categories || { items: [] }
   );
@@ -99,7 +99,7 @@ export default function ShowCategories() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Categories</h1>
+        <h1 className="text-2xl font-bold border-b-4 border-green-400">Categories</h1>
         <Link
           to="/admin/categories/create"
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded flex items-center"
@@ -109,7 +109,7 @@ export default function ShowCategories() {
       </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-      
+
         <DataTable
           columns={columns}
           data={safeCategories}

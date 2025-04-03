@@ -21,7 +21,7 @@ export default function PasswordChange() {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Show loading indicator
     Swal.fire({
       title: 'Processing',
@@ -35,15 +35,16 @@ export default function PasswordChange() {
     try {
       // Dispatch the updatePassword action and wait for the result
       const result = await dispatch(updatePassword(passwordData)).unwrap();
-      
+
       // On success
       Swal.fire({
         title: 'Success!',
         text: 'Your password has been updated successfully.',
         icon: 'success',
-        confirmButtonText: 'OK'
+        showConfirmButton: false,
+        timer: 1500
       });
-      
+
       setInEditPassword(false);
       setPasswordData({
         password: '',

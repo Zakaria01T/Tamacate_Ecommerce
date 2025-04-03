@@ -26,7 +26,7 @@ export default function CartItem({ item, onRemove }) {
 
         {/* Prix et actions */}
         <div className="text-right w-32">
-          <p className="font-semibold">MAD{(item.price * item.quantity).toFixed(2)}</p>
+          <p className="font-semibold text-lg"><span className='text-sm'>MAD</span>{(item.price * item.quantity).toFixed(2)}</p>
           <button
             onClick={onRemove}
             className="text-sm bg-red-600 hover:bg-red-700 px-2 py-1 text-white rounded-lg mt-2"

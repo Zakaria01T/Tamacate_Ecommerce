@@ -33,7 +33,8 @@ class AuthController extends Controller
                     'user' => [
                         'first_name' => $user->first_name,
                         'last_name' => $user->last_name,
-                        'isAdmin' => $user->user_role
+                        'isAdmin' => $user->user_role,
+                        'image' => $user->image
                     ],
                     'token' => $token
                 ], 200);
@@ -53,7 +54,7 @@ class AuthController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:6',
+                'password' => 'required|string|min:8',
             ]);
 
             if ($validator->fails()) {

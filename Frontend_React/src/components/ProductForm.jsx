@@ -95,9 +95,11 @@ export default function ProductForm() {
         title: `Product ${isEditing ? 'updated' : 'created'} successfully!`,
         showConfirmButton: false,
         timer: 1500,
+      }).then(() => {
+        navigate(-1);
       });
 
-      navigate('/admin/products');
+
     } catch (error) {
       Swal.fire({
         icon: 'error',

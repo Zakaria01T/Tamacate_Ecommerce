@@ -7,6 +7,7 @@ import { HiX } from 'react-icons/hi';
 import { createOrder } from '../redux/features/orderSlice';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { fetchUser } from '../redux/features/userSlice';
 
 export default function CheckoutPage() {
     const dispatch = useDispatch();
@@ -14,14 +15,11 @@ export default function CheckoutPage() {
     const [moreItems, setMoreItems] = useState(false);
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState('COD')
-    const [formData, setFormData] = useState({
-        name: '',
-        phone: '',
-        address: '',
-    });
+    const { user } = useSelector((state) => state.user);
 
     useEffect(() => {
-        dispatch(fetchCart())
+        dispatch(fetchUser());
+        dispatch(fetchCart());
     }, [dispatch])
 
     const handleChange = (e) => {
@@ -95,30 +93,33 @@ export default function CheckoutPage() {
                         <div className="mb-2">
                             <label className="block text-sm font-medium text-gray-700">Full Name</label>
                             <input
+                                readOnly
                                 type="text"
                                 name="name"
-                                value={formData.name}
+                                value={user?.first_name + " " + user?.last_name}
                                 onChange={handleChange}
-                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm  sm:text-sm"
                             />
                         </div>
                         <div className="mb-2">
                             <label className="block text-sm font-medium text-gray-700">Phone</label>
                             <input
+                                readOnly
                                 type="text"
                                 name="phone"
-                                value={formData.phone}
+                                value={user?.phone}
                                 onChange={handleChange}
-                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm  sm:text-sm"
                             />
                         </div>
                         <div className="mb-2">
                             <label className="block text-sm font-medium text-gray-700">Address</label>
                             <textarea
+                                readOnly
                                 name="address"
-                                value={formData.address}
+                                value={user?.address}
                                 onChange={handleChange}
-                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm  sm:text-sm"
                             ></textarea>
                         </div>
                     </div>
@@ -178,15 +179,15 @@ export default function CheckoutPage() {
                         <h2 className="text-xl font-bold mb-2">Summary</h2>
                         <div className="flex justify-between mb-2">
                             <p>Subtotal</p>
-                            <p>€{total.toFixed(2)}</p>
+                            <p className='text-lg font-semibold'><span className='text-sm'>MAD</span>{total.toFixed(2)}</p>
                         </div>
                         <div className="flex justify-between mb-2">
                             <p>Shipping fee</p>
-                            <p>Free</p>
+                            <p className='text-green-400'>Free</p>
                         </div>
                         <div className="flex justify-between font-bold text-lg">
                             <p>Total</p>
-                            <p>€{total.toFixed(2)}</p>
+                            <p className='text-lg'><span className='text-sm'>MAD</span>{total.toFixed(2)}</p>
                         </div>
                         <button
                             onClick={handlePlaceOrder}
@@ -223,7 +224,7 @@ export default function CheckoutPage() {
                                     <p className='text-sm text-gray-500'>{item.description}</p>
 
                                     <div className='flex justify-between'>
-                                        <p className='font-bold text-xl'>MAD {item.price}</p>
+                                        <p className='font-bold text-xl'><span className='text-sm text-gray-400'>MAD</span> {item.price}</p>
                                         <QuantityControl item={item} />
                                     </div>
                                 </div>

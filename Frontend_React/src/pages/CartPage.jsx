@@ -1,13 +1,13 @@
 import { useSelector, useDispatch } from 'react-redux'
 import { removeFromCart, fetchCart, clearCartFromServer } from '../redux/features/cartSlice'
 import CartItem from '../components/CartItem'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { HiShoppingCart } from 'react-icons/hi'
 import { useEffect } from 'react'
 import Swal from 'sweetalert2'
 
 export default function CartPage() {
-    const { items, total } = useSelector((state) => state.cart)
+    const { items, total, status } = useSelector((state) => state.cart)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -84,7 +84,7 @@ export default function CartPage() {
                     <div className="border-t pt-4 mt-4">
                         <div className="flex justify-between items-center">
                             <span className="text-xl font-bold">Total:</span>
-                            <span className="text-xl">MAD{total.toFixed(2)}</span>
+                            <span className="text-2xl"><span className='text-lg'>MAD</span>{total.toFixed(2)}</span>
                         </div>
 
                         <div className="flex justify-end gap-4 mt-6">

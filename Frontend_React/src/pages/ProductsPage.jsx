@@ -97,7 +97,7 @@ const ProductsPage = () => {
       cell: (row) => {
         return (
           <img
-            src={`http://localhost:8000/images/products/${row.image}`}
+            src={`http://localhost:8000/images/products/${row.image?row.image:'default.jpg'}`}
             alt={row.name}
             className="w-16 h-16 object-cover rounded-md"
           />

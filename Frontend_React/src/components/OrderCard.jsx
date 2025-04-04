@@ -38,7 +38,7 @@ const OrderCard = () => {
                         >
                             <img
                                 className="w-20 h-20 object-cover rounded-md"
-                                src={`http://localhost:8000/images/products/${item.product.image}`}
+                          src={`http://localhost:8000/images/products/${item.product.image ? item.product.image:"default.jpg"}`}
                                 alt={item.product.name}
                             />
                             <div className="flex-1 ml-4">

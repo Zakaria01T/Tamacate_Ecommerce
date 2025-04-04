@@ -18,7 +18,7 @@ const ProductCard = ({ product }) => useMemo(() => {
     }
     return (
         <div className="p-4 shadow-lg card hover:shadow-2xl transition duration-300 ease-in-out gap-y-2 rounded-lg bg-white flex flex-col justify-between">
-            <img src={`http://localhost:8000/images/products/${product.image}`} alt={product.name} className="h-48 w-full object-cover rounded-lg" />
+        <img src={`http://localhost:8000/images/products/${product.image ? product.image:'default.jpg'}`} alt={product.name} className="h-48 w-full object-cover rounded-lg" />
             <div className='flex justify-between items-center '>
                 <h5 className="text-base font-bold mt-2">{product.name}</h5>
                 <div className='flex items-center'>

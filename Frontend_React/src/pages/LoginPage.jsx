@@ -1,21 +1,28 @@
-import { useEffect, useState, use } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { Eye, EyeOff } from 'lucide-react';
 import { loginUser } from '../redux/features/authSlice';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function LoginPage() {
-  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [credentials, setCredentials] = useState({
+    email: '',
+    password: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { status, userInfo, error } = useSelector((state) => state.auth);
 
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    dispatch(loginUser(credentials));
-  };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      dispatch(loginUser(credentials));
+    },
+    [dispatch, credentials],
+  );
 
   useEffect(() => {
     if (error) {
@@ -29,56 +36,88 @@ export default function LoginPage() {
       });
     }
     if (userInfo && status === 'succeeded') {
-      if (userInfo.isAdmin) {
-        navigate('/dashboard');
-      }
-      else {
-        navigate('/');
-      }
+      navigate(userInfo.isAdmin ? '/dashboard' : '/');
     }
-  }, [status, error]);
+  }, [status, error, userInfo, navigate]);
 
   return (
-    <div className="container mx-auto p-4 max-w-md">
-      <h1 className="text-3xl font-bold mb-6">Login</h1>
+    <div className="flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="p-8">
+            {/* User Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+            </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block mb-2">Email</label>
-          <input
-            type="email"
-            className="w-full p-2 border rounded"
-            value={credentials?.email}
-            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-            required
-          />
+            <h1 className="text-3xl font-semibold text-center text-gray-800 mb-2">Welcome Back</h1>
+            <p className="text-center text-gray-500 mb-8">Please enter your login details</p>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-4">
+                {/* Email Input */}
+                <div className="relative">
+                  <input
+                    type="email"
+                    name="email"
+                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    value={credentials.email}
+                    onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                    placeholder="Email Address"
+                    required
+                  />
+                </div>
+
+                {/* Password Input */}
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    value={credentials.password}
+                    onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                    placeholder="Password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 transition"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                disabled={status === 'loading'}
+                className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all duration-300 flex items-center justify-center
+                  ${status === 'loading'
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-200'}
+                h-12`}
+              >
+                {status === 'loading' ? <LoadingSpinner /> : 'Sign In'}
+              </button>
+            </form>
+
+            {/* Register Link */}
+            <div className="mt-8 text-center text-sm text-gray-500">
+              <p>
+                Don't have an account?{' '}
+                <Link to="/register" className="text-blue-600 font-medium hover:underline transition-colors duration-200">
+                  Register now
+                </Link>
+              </p>
+            </div>
+          </div>
         </div>
-
-        <div>
-          <label className="block mb-2">Password</label>
-          <input
-            type="password"
-            className="w-full p-2 border rounded"
-            value={credentials.password}
-            onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={status === 'loading'}
-          className="w-full bg-blue-600 text-white p-2 rounded disabled:bg-gray-400"
-        >
-          {status === 'loading' ? <LoadingSpinner /> : 'Sign in'}
-        </button>
-      </form>
-
-      <div className="mt-4 text-center">
-        <span className="text-gray-600">You don't have account? </span>
-        <Link to="/register" className="text-blue-600 hover:underline">
-          register
-        </Link>
       </div>
     </div>
   );

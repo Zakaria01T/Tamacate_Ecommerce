@@ -13,7 +13,6 @@ function Turnover({ salesData, productData }) {
 
   useEffect(() => {
     if (salesData.length) {
-      console.log(productData);
       setTotalSalesValue(salesData.reduce((total, sale) => total + sale.total_price, 0));
       setBestSellingItems(getBestSellingItems(salesData));
       setTopSellingArticles(getTopSellingArticles(salesData));
@@ -29,7 +28,7 @@ function Turnover({ salesData, productData }) {
       data: {
         labels: getLabelsForTimePeriod(timePeriod),
         datasets: [{
-          label: "Chiffre d'affaires",
+          label: "Turnover",
           data: getDataForTimePeriod(timePeriod, data),
           borderColor: 'rgb(10,225,70)',
           tension: 0.1,
@@ -76,7 +75,7 @@ function Turnover({ salesData, productData }) {
     .sort((a, b) => b.total_price - a.total_price)
     .slice(0, 8)
     .map((sale) => ({
-      article: `Order #${sale.id}`,
+      article: sale.order_number,
       total: sale.total_price,
     }));
 
@@ -104,7 +103,7 @@ function Turnover({ salesData, productData }) {
         <div className="w-[55%] bg-white p-2.5 m-5 rounded-lg shadow-md">
           <div className="flex items-center border-b-2 border-gray-300 pb-2">
             <h3 className="text-lg font-semibold">Turnover</h3>
-            <div className="ml-auto font-bold">{totalSalesValue.toFixed(2)}$</div>
+            <div className="ml-auto font-bold">{totalSalesValue.toFixed(2)} MAD</div>
           </div>
           <div className="mt-2.5 mb-2.5">
             <ul className="flex justify-around list-none">
@@ -132,7 +131,7 @@ function Turnover({ salesData, productData }) {
           <ul className="mt-2.5">
             {bestSellingItems.map((item, index) => (
               <li key={index} className="flex justify-between text-gray-600 mt-2.5">
-                {item.article} <span className="font-bold ml-10">${item.total.toFixed(2)}</span>
+                {item.article} <span className="font-bold ml-10">{item.total} MAD</span>
               </li>
             ))}
           </ul>

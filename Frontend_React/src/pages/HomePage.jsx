@@ -36,7 +36,7 @@ export default function HomePage() {
             {status === 'loading' ? (
                 <LoadingSpinner />
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 ">
+                <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 ">
                     {filteredItems.map((product) => (
                         <ProductCard key={product.id} product={product} />
                     ))}

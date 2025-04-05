@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { updateCart } from "../redux/features/cartSlice";
 import { useState } from "react";
+import Swal from 'sweetalert2';
 
 const QuantityControl = ({ item }) => {
     const [quantity, setQuantity] = useState(item.quantity);
@@ -8,7 +9,11 @@ const QuantityControl = ({ item }) => {
 
     const handleQuantityChange = (newQuantity) => {
         if (newQuantity > item.stock) {
-            alert('The quantity exceeds the available stock.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'The quantity exceeds the available stock.',
+            });
             return;
         }
         const qty = Math.max(1, Math.min(item.stock, newQuantity));

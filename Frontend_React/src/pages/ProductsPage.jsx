@@ -136,13 +136,13 @@ const ProductsPage = () => {
         <div className="flex space-x-2">
           <button
             onClick={() => showProductForm({ initialData: row })}
-            className="bg-blue-600 text-lg hover:bg-blue-700 text-white p-2 rounded-lg"
+            className="bg-blue-600 text-lg hover:bg-blue-700 text-white p-2 rounded-full"
           >
             <HiPencil />
           </button>
           <button
             onClick={() => handleDelete(row.id)}
-            className="bg-red-600 text-lg hover:bg-red-700 text-white p-2 rounded-lg"
+            className="bg-red-600 text-lg hover:bg-red-700 text-white p-2 rounded-full"
           >
             <HiTrash />
           </button>
@@ -201,12 +201,6 @@ const ProductsPage = () => {
               backgroundColor: '#f3f4f6',
               fontWeight: 'bold',
               fontSize: '0.875rem',
-            },
-          },
-          cells: {
-            style: {
-              paddingTop: '1rem',
-              paddingBottom: '1rem',
             },
           },
         }}

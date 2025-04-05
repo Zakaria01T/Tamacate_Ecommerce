@@ -17,7 +17,20 @@ const ProductCard = ({ product }) => {
     }
     return (
         <div className="p-4 shadow-lg card hover:shadow-2xl transition duration-300 ease-in-out gap-y-2 rounded-lg bg-white flex flex-col justify-between">
-            <img src={`http://localhost:8000/images/products/${product.image ? product.image : 'default.jpg'}`} alt={product.name} className="h-48 w-full object-contain rounded-lg" />
+            <div className="relative">
+                <img
+                    src={`http://localhost:8000/images/products/${product.image ? product.image : 'default.jpg'}`}
+                    alt={product.name}
+                    className="h-48 w-full object-contain rounded-lg"
+                />
+                {product.stock === 0 && (
+                    <img
+                        src="http://localhost:8000/images/products/outofstock.png"
+                        alt="Out of Stock"
+                        className="absolute top-0 left-0 h-full w-full object-contain "
+                    />
+                )}
+            </div>
             <div className='flex justify-between items-center '>
                 <h5 className="text-base font-bold mt-2">{product.name}</h5>
                 <div className='flex items-center'>
@@ -31,8 +44,9 @@ const ProductCard = ({ product }) => {
                     <p className="text-gray-400 line-through text-xl font-bold"><span className='text-lg'>MAD</span>{Number(product.price) + 55.50}</p>
                 </div>
                 <button
+                    disabled={product.stock === 0}
                     onClick={() => addPanier()}
-                    className="bg-green-500 rounded-full text-white p-2 text-3xl w-fit mt-2 hover:bg-green-600 transition duration-300 ease-in-out"
+                    className={`${product.stock === 0 ? 'bg-gray-400' : 'bg-green-500 hover:bg-green-600 transition duration-300 ease-in-out'} rounded-full text-white p-2 text-3xl w-fit mt-2 `}
                 >
                     <HiShoppingCart />
                 </button>

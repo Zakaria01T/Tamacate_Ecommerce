@@ -26,20 +26,20 @@ export default function ShowCategories() {
 
   const handleDelete = (id) => {
     Swal.fire({
-      title: "Êtes-vous sûr ?",
-      text: "Cette action est irréversible !",
+      title: "Are you sure?",
+      text: "This action is irreversible!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Oui, supprimer",
-      cancelButtonText: "Annuler"
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel"
     }).then((result) => {
       if (result.isConfirmed) {
         dispatch(deleteCategory(id));
         Swal.fire(
-          "Supprimé !",
-          "La catégorie a été supprimée avec succès.",
+          "Deleted!",
+          "The category has been successfully deleted.",
           "success"
         );
       }

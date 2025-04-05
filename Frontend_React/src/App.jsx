@@ -39,7 +39,6 @@ function App() {
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/products" element={<ProductsPage />} />
             <Route path="/admin/orders" element={<OrdersAdminPage />} />
-            <Route path="/admin/product" element={<ProductForm />} />
             {/* Routes categories */}
             <Route path="/admin/categories" element={<ShowCategories />} />
             <Route path="/admin/categories/create" element={<CategoryForm />} />

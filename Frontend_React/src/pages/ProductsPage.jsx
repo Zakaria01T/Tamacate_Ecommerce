@@ -6,10 +6,13 @@ import DataTable from 'react-data-table-component';
 import { fetchProducts, deleteProduct } from '../redux/features/productSlice';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { API } from '../api/api';
+import ProductForm from '../components/ProductForm';
 
 const ProductsPage = () => {
   const [categories, setCategories] = useState([]);
   const [filterText, setFilterText] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [initialData, setInitialData] = useState({});
   const [resetPaginationToggle, setResetPaginationToggle] = useState(false);
   const dispatch = useDispatch();
   const { items, status } = useSelector((state) => state.products);
@@ -97,7 +100,7 @@ const ProductsPage = () => {
       cell: (row) => {
         return (
           <img
-            src={`http://localhost:8000/images/products/${row.image?row.image:'default.jpg'}`}
+            src={`http://localhost:8000/images/products/${row.image ? row.image : 'default.jpg'}`}
             alt={row.name}
             className="w-16 h-16 object-cover rounded-md"
           />
@@ -131,13 +134,12 @@ const ProductsPage = () => {
       name: 'Actions',
       cell: (row) => (
         <div className="flex space-x-2">
-          <Link
-            to="/admin/product/"
-            state={{ product: row }}
+          <button
+            onClick={() => showProductForm({ initialData: row })}
             className="bg-blue-600 text-lg hover:bg-blue-700 text-white p-2 rounded-lg"
           >
             <HiPencil />
-          </Link>
+          </button>
           <button
             onClick={() => handleDelete(row.id)}
             className="bg-red-600 text-lg hover:bg-red-700 text-white p-2 rounded-lg"
@@ -153,19 +155,35 @@ const ProductsPage = () => {
     },
   ];
 
+  const showProductForm = ({ initialData }) => {
+    setShowForm(true);
+    setInitialData({ ...initialData, initialData });
+  }
+
 
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="mx-auto p-4">
+      {showForm && (
+        <ProductForm
+          initialValues={initialData}
+          categories={categories}
+          onClose={() => setShowForm(false)}
+          onSuccess={() => {
+            dispatch(fetchProducts());
+            setShowForm(false);
+          }}
+        />
+      )}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold border-b-4 border-green-400 w-fit">Products</h1>
-        <Link
-          to="/admin/product"
+        <button
+          onClick={() => showProductForm({})}
           className="bg-green-600 hover:bg-green-400 text-white px-4 py-2 rounded-lg flex items-center gap-1"
         >
           <HiPlus className="text-xl" />
           <span>Add Product</span>
-        </Link>
+        </button>
       </div>
 
       <DataTable

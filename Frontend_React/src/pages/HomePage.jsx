@@ -18,13 +18,18 @@ export default function HomePage() {
         }
     }, [dispatch])
 
-    const filteredItems = items.length > 0 ? items.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category_id === Number(searchTerm)
-    ) : []
+    const filteredItems = items.length > 0 ? items.filter(product => {
+        if (typeof searchTerm === 'number') {
+            return product.category_id === searchTerm;
+        }
+        else {
+            return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+    }
+    ) : [];
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 gap-2">
             <h1 className="text-3xl font-bold mb-6 border-b-4 border-green-400 w-fit">Products</h1>
             <SearchBar />
 

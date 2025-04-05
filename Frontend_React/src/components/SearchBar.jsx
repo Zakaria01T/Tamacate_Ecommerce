@@ -21,7 +21,10 @@ export default function SearchBar() {
 
     const handleSearchByCategory = (e) => {
         setIdCategory(e.target.value)
-        dispatch(filterProducts(e.target.value))
+        if (e.target.value === '')
+            dispatch(filterProducts(e.target.value))
+        else
+            dispatch(filterProducts(Number(e.target.value)))
     }
     return (
         <div className="flex justify-between items-center gap-2">

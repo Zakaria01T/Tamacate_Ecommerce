@@ -76,6 +76,7 @@ const authSlice = createSlice({
             })
             .addCase(logoutUser.fulfilled, (state) => {
                 state.userInfo = null;
+                state.status = 'idle';
                 localStorage.removeItem('userInfo');
                 localStorage.removeItem('csrf_token');
             })

@@ -41,14 +41,14 @@ export default function LoginPage() {
   }, [status, error, userInfo, navigate]);
 
   return (
-    <div className="flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 p-4">
+    <div className="flex items-center justify-center bg-gradient-to-br from-green-50 to-purple-50 p-4">
       <div className="w-full max-w-md">
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           <div className="p-8">
             {/* User Icon */}
             <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
                   <input
                     type="email"
                     name="email"
-                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
                     value={credentials.email}
                     onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
                     placeholder="Email Address"
@@ -77,7 +77,7 @@ export default function LoginPage() {
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
-                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
+                    className="w-full p-4 border-2 border-gray-300 rounded-lg bg-transparent focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-200"
                     value={credentials.password}
                     onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
                     placeholder="Password"
@@ -100,7 +100,7 @@ export default function LoginPage() {
                 className={`w-full py-3 px-4 rounded-lg text-white font-medium transition-all duration-300 flex items-center justify-center
                   ${status === 'loading'
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-200'}
+                    : 'bg-gradient-to-r from-yellow-500 to-green-600 hover:from-yellow-600 hover:to-green-700 shadow-lg hover:shadow-green-200'}
                 h-12`}
               >
                 {status === 'loading' ? <LoadingSpinner /> : 'Sign In'}
@@ -111,7 +111,7 @@ export default function LoginPage() {
             <div className="mt-8 text-center text-sm text-gray-500">
               <p>
                 Don't have an account?{' '}
-                <Link to="/register" className="text-blue-600 font-medium hover:underline transition-colors duration-200">
+                <Link to="/register" className="text-green-600 font-medium hover:underline transition-colors duration-200">
                   Register now
                 </Link>
               </p>
